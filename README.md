@@ -1,8 +1,28 @@
 # Проектная работа "Веб-ларек"
 
-Стек: HTML, SCSS, TS, Webpack
+1 Используемый стек: HTML, SCSS, TS, Webpack
 
-Структура проекта:
+2.1 Установка и запуск
+Для установки и запуска проекта необходимо выполнить команды
+
+npm install
+npm run start
+
+или
+
+yarn
+yarn start
+
+2.2 Сборка
+
+npm run build
+
+или
+
+yarn build
+
+
+3 Структура проекта:
 - src/ — исходные файлы проекта
 - src/components/ — папка с JS компонентами
 - src/components/base/ — папка с базовым кодом
@@ -15,28 +35,4 @@
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
 
-## Установка и запуск
-Для установки и запуска проекта необходимо выполнить команды
-
-```
-npm install
-npm run start
-```
-
-или
-
-```
-yarn
-yarn start
-```
-## Сборка
-
-```
-npm run build
-```
-
-или
-
-```
-yarn build
-```
+4 

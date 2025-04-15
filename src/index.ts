@@ -54,7 +54,7 @@ interface CatalogModel {
     getProduct(id: string): IProduct; //этот метод, чтобы можно было получать при необходимости
 }
 
-//// это была реализация модели данных
+//// *это была реализация модели данных
 
 interface IViewConstructor {
     new (container: HTMLElement, events?: IEventEmitter): IView; // на входе контейнер, в него будем выводить
@@ -109,7 +109,7 @@ class BasketView implements IView {
 }
 
 
-//// а это реализация компонентов отображения
+//// *а это реализация компонентов отображения
 
 /// связка этих компонентов сначала инициализация
 const api = new ShopAPI();

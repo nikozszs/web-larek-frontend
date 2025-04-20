@@ -1,0 +1,20 @@
+import { IOrderForm } from "../types";
+import { IEvents } from "./base/events";
+import { Form } from "./common/Form";
+
+export class Order extends Form <IOrderForm> {
+    constructor(container: HTMLFormElement, events: IEvents) {
+        super(container, events);
+    }
+
+    set phone(value: string) {
+        (this.container.elements.namedItem('phone') as HTMLInputElement).value = value;
+    }
+
+    set email(value: string) {
+        (this.container.elements.namedItem('email') as HTMLInputElement).value = value;
+    }
+}
+
+//Можно взять Order и его исправить и еще 
+// копию с него сделать и вторую форму реализовать. 

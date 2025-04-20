@@ -22,7 +22,7 @@ export abstract class Component<T> {
         }
     }
 
-    // Сменить статус блокировки
+    // Сменить статус блокировки 
     setDisabled(element: HTMLElement, state: boolean) {
         if (element) {
             if (state) element.setAttribute('disabled', 'disabled');

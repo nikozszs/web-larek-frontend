@@ -22,12 +22,14 @@
 					<img class="header__logo-image" src="<%=require('../images/logo.svg')%>" alt="Film! logo" />
 				</a>
 				<button class="header__basket">
-					<span class="header__basket-counter">0</span>
+					<span class="header__basket-counter" data-element="basket" data-component="basket">0</span>
 				</button>
 			</div>
 		</header>
 
-		<main class="gallery"></main>
+		<main class="gallery">
+			<div class="catalog__items" data-element="catalog" data-component="catalog"></div>
+		</main>
 	</div>
 
 	<div class="modal" id="modal-container">
@@ -39,7 +41,7 @@
 		</div>
 	</div>
 
-	<div class="modal modal_active">
+	<div class="modal">
 		<div class="modal__container">
 			<button class="modal__close" aria-label="закрыть"></button>
 			<div class="modal__content">
@@ -132,7 +134,7 @@
 						</label>
 						<label class="order__field">
 							<span class="form__label modal__title">Телефон</span>
-							<input class="form__input" type="text" placeholder="+7 (" />
+							<input class="form__input" type="text" placeholder="+7 (9" />
 						</label>
 					</div>
 					<div class="modal__actions">

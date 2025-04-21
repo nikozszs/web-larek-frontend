@@ -1,11 +1,24 @@
-import { CategoryStatus } from "../types";
+import { CategoryStatus, IProduct } from "../types";
+
 
 class ProductBasket {
-    constructor(
-      protected id: string,
-      protected title: string,
-      protected price: number
-    ) {}
+  protected items:IProduct[] = [];
+  constructor(
+    protected id: string,
+    protected title: string,
+    protected price: number
+  ) {}
+
+    deleteItem(id: number){
+      this.items = this.items.filter(item => item.id !== id)
+    }
+
+    getItems(): IProduct[] {}
+
+    getItem(id: number){}
+
+    getTotal(): number {}
+
 }
   
 class CatalogProduct extends ProductBasket {

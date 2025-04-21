@@ -25,6 +25,10 @@ export function ensureAllElements<T extends HTMLElement>(selectorElement: Select
     throw new Error(`Unknown selector element`);
 }
 
+export function formatNumber(x: number, sep = ' ') {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+}
+
 export type SelectorElement<T> = T | string;
 
 

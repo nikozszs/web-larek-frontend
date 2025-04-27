@@ -1,4 +1,4 @@
-import { IOrder, IOrderResult, IProduct } from "../types"
+import { IOrder, IOrderResult, IProduct, productUpdate } from "../types"
 import { Api, ApiListResponse } from "./base/api"
 
 export interface IShopAPI {
@@ -17,23 +17,36 @@ export class ShopAPI extends Api implements IShopAPI {
         this.cdn = cdn;
     }
     getProdustList(): Promise<IProduct[]> {
-        return this.get<IProduct[]>('/product');
+        return this.get('/product').then((data: ApiListResponse<IProduct>) => 
+            data.items.map((item) => ({
+                ...item,
+                image: this.cdn + item.image,
+            }))
+        );
     }
 
     getProduct(id: string): Promise<IProduct> {
-        return this.get<IProduct>(`/product/${id}`);
+        return this.get<IProduct>(`/product/${id}`).then(
+            (item: IProduct) => ({
+                ...item,
+                image: this.cdn + item.image,
+            })
+        );
     }
 
     getProductUpdate(id: string): Promise<IProduct> {
-        return this.get<IProduct>(`/product/update/${id}`);
+        return this.get<IProduct>(`/product/${id}`).then(
+            (data: productUpdate) => data
+        );
     }
 
     orderProducts(order: IOrder): Promise<IOrderResult> {
-        return this.post<IOrderResult>('/order', order);
+        return this.post('/order', order).then(
+            (data: IOrderResult) => data
+        );
     }
 
     deleteProduct(id: string): Promise<IProduct> {
         return this.post<IProduct>('/product', {id}, 'DELETE');
     }
-
 }

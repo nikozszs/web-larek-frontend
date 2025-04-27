@@ -2,7 +2,7 @@ import { IOrderForm } from "../types";
 import { IEvents } from "./base/events";
 import { Form } from "./common/Form";
 
-export class Order extends Form <IOrderForm> {
+export class OrderOnline extends Form <IOrderForm> {
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
     }
@@ -13,6 +13,16 @@ export class Order extends Form <IOrderForm> {
 
     set email(value: string) {
         (this.container.elements.namedItem('email') as HTMLInputElement).value = value;
+    }
+}
+
+export class OrderOffline extends Form <IOrderForm> {
+    constructor(container: HTMLFormElement, events: IEvents) {
+        super(container, events);
+    }
+
+    set address(value: string) {
+        (this.container.elements.namedItem('address') as HTMLInputElement).value = value;
     }
 }
 

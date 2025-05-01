@@ -8,8 +8,9 @@ import { ShopAPI } from './components/Model/ShopAPI';
 import './scss/styles.scss';
 import { API_URL, CDN_URL } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { CardCatalog } from './components/View/Card';
+import { PreviewCard, CardItemGallary, CardItemBasket  } from './components/View/Card';
 import { ProductsData } from './components/Model/ProductsData';
+import { IProduct, IProductsData } from './types';
 
 
 //экземпляры классов
@@ -38,16 +39,39 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 // Переиспользуемые части интерфейса
 const cardBasket = new Basket(cloneTemplate(cardBasketTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-const contacts = new Contacts(contactsTemplate, events);
-const order = new Order(orderTemplate, events);
-const basketModel = ;
-const formModel = (events);
+//const contacts = new Contacts(contactsTemplate, events);
+//const order = new Order(orderTemplate, events);
+//const basketModel = ;
+//const formModel = (events);
 
 
 // Отображение карточек на главной странице
-events.on('products:changed', () => {
-    productsData.products.forEach(it => {
-        const card = new CardCatalog(cardCatalogTemplate, events, { onClick: () => events.emit('card:select', it)});
-        ensureElement<HTMLElement>('.catalog__items').append(card.render(it));
+api.getProducts()
+    .then(products => {
+        productsData.setProducts(products);
+        renderCatalog(products);
+    })
+    .catch(err => {
+        console.error(err);
     });
-});
+
+function renderCatalog(products: IProduct[]) {
+    const container = ensureElement<HTMLElement>('.gallery');
+    container.innerHTML = '';
+        
+    products.forEach(product => {
+        const cardElement = cloneTemplate(cardCatalogTemplate);
+        const previewElement = cloneTemplate(cardPreviewTemplate);
+        const card = new CardItemGallary(cardElement, {
+            onClick: () => new PreviewCard(previewElement)
+        });
+            
+        card.id = product.id;
+        card.title = product.title;
+        card.price = product.price;
+        card.image = product.image;
+        card.category = product.category;
+            
+        container.appendChild(card.render());
+    });
+}

@@ -19,7 +19,7 @@ export class ShopAPI extends Api implements IShopAPI {
         return this.get('/product').then((data: ApiListResponse<IProduct>) => 
             data.items.map((item) => ({
                 ...item,
-                image: this.cdn + item.image,
+                image: this.cdn + item.image.replace('.svg', '.png'),
             }))
         );
     }
@@ -28,7 +28,7 @@ export class ShopAPI extends Api implements IShopAPI {
         return this.get<IProduct>(`/product/${id}`).then(
             (item: IProduct) => ({
                 ...item,
-                image: this.cdn + item.image,
+                image: this.cdn + item.image.replace('.svg', '.png'),
             })
         );
     }

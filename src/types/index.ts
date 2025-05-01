@@ -3,7 +3,7 @@ export type CategoryStatus = 'софт-скил' | 'другое' | 'допол�
 export interface IProduct {
     id: string,
     title?: string,
-    price: number,
+    price: number | null,
     image: string,
     category?: CategoryStatus,
     description?: string,
@@ -20,6 +20,7 @@ export interface IProductsData {
     toggleOrderedProduct(id: string, isIncluded: boolean): void;
     clearBasket(): void;
     getTotal(): number;
+    setProducts(products: IProduct[]): void;
     getProduct(id: string): IProduct;
     deleteProduct(id: string): void;
     updateProduct(product: IProduct, payload: Function | null): void;
@@ -36,9 +37,11 @@ export interface IUserData {
     checkUserValidation(data: Record<keyof ModalContacts | keyof ModalPayment, string>): boolean;
 }
 
-export type ModalProduct = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'description' | 'category'>;
+export type PreviewCard = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'description' | 'category'>;
 
-export type ModalBasket = Pick<IProduct, 'id' | 'price' | 'title'>;
+export type CardGallary = Pick<IProduct, 'id' | 'price' | 'title' | 'category' | 'image'>;
+
+export type CardBasket = Pick<IProduct, 'id' | 'price' | 'title' | 'totalPrice'>;
 
 export type ModalPayment = Pick<IUserData, 'address' | 'payment'>;
 

@@ -1,5 +1,5 @@
-import { FormErrors, IOrder, IOrderForm, IProduct, IProductsData, ModalContacts, ModalPayment, ModalProduct } from "../types"
-import { IEvents } from "./base/events"
+import { FormErrors, IOrder, IOrderForm, IProduct, IProductsData, ModalContacts, ModalPayment, PreviewCard } from "../../types";
+import { IEvents } from "../base/events";
 import _ from "lodash";
 
 export type CatalogChangeEvent = {
@@ -25,9 +25,9 @@ export class ProductsData implements IProductsData {
         this.events = events;
     }
 
-    set products(products: IProduct[]) {
+    setProducts(products: IProduct[]) {
         this._products = products;
-        this.events.emit('products:changed')
+        this.events.emit('products:changed', this._products)
     }
 
     get products(){
@@ -46,7 +46,7 @@ export class ProductsData implements IProductsData {
         const selectedProduct = this.getProduct(id);
         if (selectedProduct) {
             this._preview = id;
-            this.events.emit('product:selected')
+            this.events.emit('PreviewCard:open')
         }
     }
 

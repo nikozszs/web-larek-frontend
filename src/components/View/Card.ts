@@ -1,39 +1,25 @@
-import {CategoryStatus, IProduct} from "../../types";
-import {bem, createElement, ensureElement, formatNumber} from "../../utils/utils";
-import clsx from "clsx";
+import { CardBasket, CardGallary } from "../../types";
+import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
 
-interface ICardActions {
-    onClick: (event: MouseEvent) => void;
-}
-//реализация карточек на главной странице
-export interface ICard<T> {
+export interface ICardBase{
+    id: string;
     title: string;
-    image: string;
-    id: string,
-    price: number,
-    category?: CategoryStatus,
-    description?: string,
+    price: number;
 }
 
-export class CardCatalog<T> extends Component<ICard<T>> {
+// реализация базовой карточки
+export class Card<T> extends Component<T> {
     protected _title: HTMLElement;
-    protected _image?: HTMLImageElement;
-    protected _description?: HTMLElement;
-    protected _button?: HTMLButtonElement;
     protected _price: HTMLElement;
-    protected _category?: HTMLElement;
-
+    protected _button?: HTMLButtonElement;
 
     constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {
         super(container);
 
         this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
-        this._image = ensureElement<HTMLImageElement>(`.${blockName}__image`, container);
         this._button = container.querySelector(`.${blockName}__button`);
-        this._description = container.querySelector(`.${blockName}__description`);
-        this._price = ensureElement<HTMLElement>(`.${blockName}__price`, container);
-        this._category = ensureElement<HTMLElement>(`.${blockName}__category`, container);
+        this._price = container.querySelector(`.${blockName}__price`);
 
         if (actions?.onClick) {
             if (this._button) {
@@ -42,22 +28,6 @@ export class CardCatalog<T> extends Component<ICard<T>> {
                 container.addEventListener('click', actions.onClick);
             }
         }
-    }
-
-    set price(value) {
-        this._price = value;
-    }
-
-    get price() {
-        return this._price;
-    }
-
-    set category(value) {
-        this.container.dataset.id = value;
-    }
-
-    get category(): string {
-        return this.container.dataset.id || '';
     }
 
     set id(value: string) {
@@ -72,12 +42,34 @@ export class CardCatalog<T> extends Component<ICard<T>> {
         this.setText(this._title, value);
     }
 
+    set price(value: number) {
+        this.setText(this._price, `${value} синапсов`)
+    }
+
     get title(): string {
         return this._title.textContent || '';
     }
+}
+
+// реализация превью карточки товара
+export class PreviewCard extends Card<PreviewCard> {
+    protected _image: HTMLImageElement;
+    protected _description: HTMLElement;
+    protected _category: HTMLElement;
+
+    constructor(container: HTMLElement, actions?: ICardActions) {
+        super('card', container, actions);
+        this._image = ensureElement<HTMLImageElement>(`.${this.blockName}__image`, container);
+        this._description = container.querySelector(`.${this.blockName}__text`);
+        this._category = container.querySelector(`.${this.blockName}__category`);
+    }
 
     set image(value: string) {
-        this.setImage(this._image, value, this.title)
+        this.setImage(this._image, value, this.title);
+    }
+
+    set category(value: string) {
+        this.setText(this._category, value);
     }
 
     set description(value: string | string[]) {
@@ -93,105 +85,57 @@ export class CardCatalog<T> extends Component<ICard<T>> {
     }
 }
 
-export type AuctionStatus = {
-    status: string,
-    time: string,
-    label: string,
-    nextBid: number,
-    history: number[]
-};
-
-
-interface IAuctionActions {
-    onSubmit: (price: number) => void;
-}
-
-//
-export class Auction extends Component<AuctionStatus> {
-    protected _time: HTMLElement;
-    protected _label: HTMLElement;
-    protected _button: HTMLButtonElement;
-    protected _input: HTMLInputElement;
-    protected _history: HTMLElement;
-    protected _bids: HTMLElement
-    protected _form: HTMLFormElement;
-
-    constructor(container: HTMLElement, actions?: IAuctionActions) {
-        super(container);
-
-        this._time = ensureElement<HTMLElement>(`.lot__auction-timer`, container);
-        this._label = ensureElement<HTMLElement>(`.lot__auction-text`, container);
-        this._button = ensureElement<HTMLButtonElement>(`.button`, container);
-        this._input = ensureElement<HTMLInputElement>(`.form__input`, container);
-        this._bids = ensureElement<HTMLElement>(`.lot__history-bids`, container);
-        this._history = ensureElement<HTMLElement>('.lot__history', container);
-        this._form = ensureElement<HTMLFormElement>(`.lot__bid`, container);
-
-        this._form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            actions?.onSubmit?.(parseInt(this._input.value));
-            return false;
-        });
-    }
-
-    set time(value: string) {
-        this.setText(this._time, value);
-    }
-    set label(value: string) {
-        this.setText(this._label, value);
-    }
-    set nextBid(value: number) {
-        this._input.value = String(value);
-    }
-    set history(value: number[]) {
-        this._bids.replaceChildren(...value.map(item => createElement<HTMLUListElement>('li', {
-            className: 'lot__history-item',
-            textContent: formatNumber(item)
-        })));
-    }
-
-    set status(value: LotStatus) {
-        if (value !== 'active') {
-            this.setHidden(this._history);
-            this.setHidden(this._form);
-        } else {
-            this.setVisible(this._history);
-            this.setVisible(this._form);
-        }
-    }
-
-    focus() {
-        this._input.focus();
-    }
-}
-
-export interface BidStatus {
-    amount: number;
-    status: boolean;
-}
-
-export class BidItem extends CardCatalog<BidStatus> {
-    protected _amount: HTMLElement;
-    protected _status: HTMLElement;
-    protected _selector: HTMLInputElement;
+// реализация карточки на главной странице
+export class CardItemGallary extends Card<CardGallary> {
+    protected _image: HTMLImageElement;
+    protected _category: HTMLElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
-        super('bid', container, actions);
-        this._amount = ensureElement<HTMLElement>(`.bid__amount`, container);
-        this._status = ensureElement<HTMLElement>(`.bid__status`, container);
-        this._selector = container.querySelector(`.bid__selector-input`);
-
-        if (!this._button && this._selector) {
-            this._selector.addEventListener('change', (event: MouseEvent) => {
-                actions?.onClick?.(event);
-            })
-        }
+        super('card', container, actions);
+        this._image = ensureElement<HTMLImageElement>(`.${this.blockName}__image`, container);
+        this._category = container.querySelector(`.${this.blockName}__category`);
     }
 
-    set status({ amount, status }: BidStatus) {
-        this.setText(this._amount, formatNumber(amount));
+    set image(value: string) {
+        this.setImage(this._image, value, this.title);
+    }
 
-        if (status) this.setVisible(this._status);
-        else this.setHidden(this._status);
+    set category(value: string) {
+        this.setText(this._category, value);
+    }
+}
+
+interface ICardActions {
+    onClick?: (event: MouseEvent) => void;
+    onSubmit?: (price: number) => void;
+    onDelete?: (id: string) => void;
+}
+
+// реализация карточки в корзине
+export class CardItemBasket extends Component<CardBasket> {
+    protected _totalPrice: HTMLElement;
+    protected _removeButton: HTMLElement;
+    protected _submitButton: HTMLElement;
+
+    constructor(container: HTMLElement, 
+        actions?: {
+            onDelete: ICardActions['onClick'];
+            onSubmit: ICardActions['onClick'];
+        }) {
+            super(container);
+            this._totalPrice = ensureElement<HTMLElement>("basket__price",container);
+            this._removeButton = ensureElement<HTMLElement>('basket__item-delete', container);
+            this._submitButton = ensureElement<HTMLElement>('button', container);
+
+            if(actions?.onDelete){
+                this._removeButton.addEventListener('click', actions.onDelete)
+            }
+
+            if(actions?.onDelete){
+                this._submitButton.addEventListener('click', actions.onSubmit)
+            }
+        }
+    set totalPrice(value: number) {
+        this.setText(this._totalPrice, `${value} синапсов`)
     }
 }

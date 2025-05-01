@@ -1,5 +1,5 @@
-import { IUserData, ModalContacts, ModalPayment } from "../types";
-import { IEvents } from "./base/events";
+import { IUserData, ModalContacts, ModalPayment } from "../../types";
+import { IEvents } from "../base/events";
 
 export class UserData implements IUserData {
     address: string;

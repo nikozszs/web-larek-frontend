@@ -1,15 +1,21 @@
-import { EventEmitter } from './components/base/events';
-import { Modal } from './components/common/Modal';
-import { Basket } from './components/common/Basket';
-import { Tabs } from './components/common/Tabs';
-import { Page } from './components/Page';
-import { Order } from './components/Order';
-import { ShopAPI } from './components/ShopAPI';
+import { EventEmitter, IEvents } from './components/base/events';
+import { Modal } from './components/View/Modal';
+import { Basket } from './components/View/Basket';
+import { Page } from './components/View/Page';
+import { UserData } from './components/Model/UserData';
+//import { Order } from './components/Order';
+import { ShopAPI } from './components/Model/ShopAPI';
 import './scss/styles.scss';
 import { API_URL, CDN_URL } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
+import { CardCatalog } from './components/View/Card';
+import { ProductsData } from './components/Model/ProductsData';
 
+
+//экземпляры классов
 const events = new EventEmitter();
+const productsData = new ProductsData(events);
+const userData = new UserData(events)
 const api = new ShopAPI(CDN_URL, API_URL);
 
 events.onAll(({ eventName, data }) => {
@@ -32,11 +38,16 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 // Переиспользуемые части интерфейса
 const cardBasket = new Basket(cloneTemplate(cardBasketTemplate), events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-const tabs = new Tabs(cloneTemplate(orderTemplate), {
-    onClick: (name) => {
-        if (name === 'closed') events.emit('basket:open');
-        else events.emit('products:open');
-    }
-});
-const contacts = new Order(cloneTemplate(contactsTemplate), events);
+const contacts = new Contacts(contactsTemplate, events);
+const order = new Order(orderTemplate, events);
+const basketModel = ;
+const formModel = (events);
 
+
+// Отображение карточек на главной странице
+events.on('products:changed', () => {
+    productsData.products.forEach(it => {
+        const card = new CardCatalog(cardCatalogTemplate, events, { onClick: () => events.emit('card:select', it)});
+        ensureElement<HTMLElement>('.catalog__items').append(card.render(it));
+    });
+});

@@ -1,8 +1,7 @@
 import { IOrderForm } from "../../types";
 import { IEvents } from "../base/events";
-import { Form } from "./Form";
 
-export class OrderOnline extends Form <IOrderForm> {
+export class FormContacts extends Form <IOrderForm> {
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
     }

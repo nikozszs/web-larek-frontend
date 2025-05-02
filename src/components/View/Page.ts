@@ -1,6 +1,9 @@
+import { template } from "lodash";
+import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
 import { IEvents } from "../base/events";
+import { CardCatalog } from "./CardCatalog";
 
 interface IPage {
     counter: number;
@@ -42,5 +45,19 @@ export class Page extends Component<IPage> {
         } else {
             this._wrapper.classList.remove('page__wrapper_locked');
         }
+    }
+
+    renderProducts(products: IProduct[]) {
+        const cardContainer = ensureElement<HTMLElement>('.catalog__items');
+            cardContainer.innerHTML = '';
+
+        products.forEach(product => {
+            const card = new CardCatalog(
+                ensureElement<HTMLTemplateElement>('#card-catalog'), this.events).render(product);
+                card.addEventListener('click', () => {
+                    this.events.emit('product:select', product);
+                });
+                cardContainer.append(card);
+        })
     }
 }

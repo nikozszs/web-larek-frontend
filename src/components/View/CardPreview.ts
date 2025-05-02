@@ -7,8 +7,8 @@ export class CardPreview extends CardCatalog {
     protected _description: HTMLElement;
     protected _button: HTMLButtonElement;
 
-    constructor(template: HTMLTemplateElement, protected events: IEvents){
-        super(template, events);
+    constructor(template: HTMLTemplateElement, protected events: IEvents, container?: HTMLElement){
+        super(template, events, container);
         this._description = ensureElement<HTMLElement>('.card__text', this.container);
         this._button = ensureElement<HTMLButtonElement>('.button', this.container);
         this._button.addEventListener('click', (evt) => {

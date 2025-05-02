@@ -9,19 +9,19 @@ export interface IProduct {
     description?: string,
     totalPrice?: number;
     index?: number;
+    count?: number;
 }
 
 //здесь хранится массив карточек и превью
 export interface IProductsData {
-    products: IProduct[];
     preview: string | null;
     basket: string[];
     order: IOrder | null;
     loading: boolean;
+    catalog: IProduct[];
     toggleOrderedProduct(id: string, isIncluded: boolean): void;
     clearBasket(): void;
     getTotal(): number;
-    setProducts(products: IProduct[]): void;
     getProduct(id: string): IProduct;
     deleteProduct(id: string): void;
     updateProduct(product: IProduct, payload: Function | null): void;

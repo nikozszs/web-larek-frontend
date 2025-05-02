@@ -10,6 +10,7 @@ export class CardBase<T extends IProduct> extends Component<T> {
     protected _title: HTMLElement;
     protected _price: HTMLElement;
     protected _events: IEvents;
+    protected _id: string = '';
 
     constructor(protected template: HTMLTemplateElement, protected events: IEvents, container?: HTMLElement) {
         super(container);
@@ -19,11 +20,11 @@ export class CardBase<T extends IProduct> extends Component<T> {
     }
 
     set id(value: string) {
-        this.container.dataset.id = value;
+        this._id = value;
     }
 
     get id(): string {
-        return this.container.dataset.id || '';
+        return this._id || '';
     }
 
     set title(value: string) {

@@ -11,7 +11,7 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { CardBasket} from './components/View/CardBasket';
 import { CardCatalog} from './components/View/CardCatalog';
 import { CardPreview} from './components/View/CardPreview';
-import { ProductsData } from './components/Model/ProductsData';
+import { CatalogChangeEvent, ProductsData } from './components/Model/ProductsData';
 import { IProduct, IProductsData } from './types';
 import { isPlainObject } from 'lodash';
 import { FormContacts } from './components/View/FormContacts';
@@ -51,14 +51,23 @@ const basket = new Basket(cloneTemplate(templates.basket), events);
 const basketModel = new BasketData;
 
 //Отображение карточек на главной странице
-events.on('products:changed', (products: IProduct[]) => {
-    page.renderProducts(products);
+events.on('products:changed', () => {
+    const gallery = ensureElement<HTMLElement>('.gallery');
+    productsData.catalog.forEach(item => {
+        const card = new CardCatalog(templates.cardCatalog, events);
+        gallery.append(card.render(item));
+      });
 });
+
+
+// Отображение превью карточки 
+events.on('preview:add', (item: IProduct) => { productsData.getPreview})
+
 
 //Ответ с сервера
 api.getProducts()
     .then(products => {
-        productsData.setProducts(products);
+        productsData.setCatalog(products);
     })
     .catch((error) => {
         console.error(error)

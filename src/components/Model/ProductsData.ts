@@ -1,13 +1,14 @@
 import { FormErrors, IOrder, IOrderForm, IProduct, IProductsData, ModalContacts, ModalPayment, PreviewCard } from "../../types";
 import { IEvents } from "../base/events";
 import _ from "lodash";
+import { Model } from "../base/Model";
 
 export type CatalogChangeEvent = {
     catalog: ProductsData[]
 };
 
-export class ProductsData implements IProductsData {
-    _products: IProduct[];
+export class ProductsData extends Model<IProductsData> implements IProductsData {
+    catalog: IProduct[];
     _preview: string | null;
     events: IEvents;
     product: IProduct;
@@ -22,19 +23,22 @@ export class ProductsData implements IProductsData {
     formErrors: FormErrors = {};
 
     constructor(events: IEvents) {
-        this.events = events;
+        super({}, events)
     }
 
-    setProducts(products: IProduct[]) {
-        this._products = products;
-        this.events.emit('products:changed', this._products)
+    get _catalog(): IProduct[] {
+        return [... this.catalog];
     }
 
-    get products(){
-        return this._products;
+    setCatalog(data:IProduct[]): void{
+        this.catalog = [...data];
+        this.events.emit('products:changed'), {
+            catalog: this._catalog,
+            count: this._catalog.length 
+        }
     }
 
-    get preview(){
+    getPreview(){
         return this._preview;
     }
 
@@ -61,20 +65,20 @@ export class ProductsData implements IProductsData {
     clearBasket() {
         this.order.items.forEach(id => {
             this.toggleOrderedProduct(id, false);
-            this._products.find(item => item.id === id);
+            this.catalog.find(item => item.id === id);
         });
     }
 
     getTotal() {
-        return this.order.items.reduce((a, c) => a + this._products.find(it => it.id === c).price, 0)
+        return this.order.items.reduce((a, c) => a + this.catalog.find(it => it.id === c).price, 0)
     }
 
     deleteProduct(id: string): void {
-        this._products = this._products.filter(product => product.id !== id);
+        this.catalog = this.catalog.filter(product => product.id !== id);
     };
     
     updateProduct(product: IProduct, payload: Function | null){
-        const findedProduct = this._products.find((value) => value.id == product.id)
+        const findedProduct = this.catalog.find((value) => value.id == product.id)
         if (!findedProduct) {
             this.product
         }
@@ -88,7 +92,7 @@ export class ProductsData implements IProductsData {
     };
 
     getProduct(id: string): IProduct {
-        const product = this.products.find(value => value.id === id);
+        const product = this.catalog.find(value => value.id === id);
         if (!product) {
             throw new Error (`Карточка продукта с id ${id} не найден`);
         }

@@ -5,7 +5,7 @@ import { CardBase } from "./CardBase";
 
 export interface IActions {
     onClick: (event: MouseEvent) => void;
-  }
+}
 
 export class CardCatalog extends CardBase<IProduct> {
     protected _image: HTMLImageElement;

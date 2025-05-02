@@ -1,4 +1,3 @@
-import { template } from "lodash";
 import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
@@ -27,7 +26,7 @@ export class Page extends Component<IPage> {
         this._basket = ensureElement<HTMLElement>('.header__basket');
 
         this._basket.addEventListener('click', () => {
-            this.events.emit('bids:open');
+            this.events.emit('basketModal:open'); 
         });
     }
 
@@ -45,19 +44,5 @@ export class Page extends Component<IPage> {
         } else {
             this._wrapper.classList.remove('page__wrapper_locked');
         }
-    }
-
-    renderProducts(products: IProduct[]) {
-        const cardContainer = ensureElement<HTMLElement>('.catalog__items');
-            cardContainer.innerHTML = '';
-
-        products.forEach(product => {
-            const card = new CardCatalog(
-                ensureElement<HTMLTemplateElement>('#card-catalog'), this.events).render(product);
-                card.addEventListener('click', () => {
-                    this.events.emit('product:select', product);
-                });
-                cardContainer.append(card);
-        })
     }
 }

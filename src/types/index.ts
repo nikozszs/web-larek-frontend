@@ -8,6 +8,7 @@ export interface IProduct {
     category?: CategoryStatus,
     description?: string,
     totalPrice?: number;
+    index?: number;
 }
 
 //здесь хранится массив карточек и превью
@@ -30,18 +31,23 @@ export interface IProductsData {
 export interface IUserData {
     address: string;
     email: string;
-    phone: number;
+    phone: string;
     payment: string;
+    total: number;
     getInfo(): ModalContacts | ModalPayment;
     setInfo(userData: IUserData): void;
-    checkUserValidation(data: Record<keyof ModalContacts | keyof ModalPayment, string>): boolean;
+    setAddress(field: string, value: string): void;
+    validateContacts(): boolean;
+    validateOrder(): boolean;
+    setContacts(field: string, value: string): void;
+    getOrder(): object;
 }
 
 export type PreviewCard = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'description' | 'category'>;
 
 export type CardGallary = Pick<IProduct, 'id' | 'price' | 'title' | 'category' | 'image'>;
 
-export type CardBasket = Pick<IProduct, 'id' | 'price' | 'title' | 'totalPrice'>;
+export type TCardBasket = Pick<IProduct, 'id' | 'price' | 'title' | 'totalPrice' | 'index'>;
 
 export type ModalPayment = Pick<IUserData, 'address' | 'payment'>;
 
@@ -56,7 +62,9 @@ export interface IOrderForm {
 }
 
 export interface IOrder extends IOrderForm {
-    items: string[];
+    payment?: string;
+    total?: number;
+    items?: string[]
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

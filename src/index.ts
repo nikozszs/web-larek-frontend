@@ -11,6 +11,7 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { PreviewCard, CardItemGallary, CardItemBasket  } from './components/View/Card';
 import { ProductsData } from './components/Model/ProductsData';
 import { IProduct, IProductsData } from './types';
+import { isPlainObject } from 'lodash';
 
 
 //экземпляры классов
@@ -24,13 +25,15 @@ events.onAll(({ eventName, data }) => {
 })
 
 //шаблоны
-const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
-const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
-const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
-const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
-const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
-const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
-const successTemplate = ensureElement<HTMLTemplateElement>('#success');
+const templates = {
+    contacts: ensureElement<HTMLTemplateElement>('#contacts'),
+    order: ensureElement<HTMLTemplateElement>('#order'),
+    basket:ensureElement<HTMLTemplateElement>('#basket'),
+    cardBasket: ensureElement<HTMLTemplateElement>('#card-basket'),
+    cardPreview: ensureElement<HTMLTemplateElement>('#card-preview'),
+    cardCatalog: ensureElement<HTMLTemplateElement>('#card-preview'),
+    success:ensureElement<HTMLTemplateElement>('#success'),
+}
 
 // Глобальные контейнеры
 const page = new Page(document.body, events);
@@ -45,33 +48,21 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 //const formModel = (events);
 
 
-// Отображение карточек на главной странице
+//Ответ с сервера
 api.getProducts()
     .then(products => {
         productsData.setProducts(products);
-        renderCatalog(products);
     })
-    .catch(err => {
-        console.error(err);
-    });
+    .catch((error) => {
+        console.error(error)
+    })
 
-function renderCatalog(products: IProduct[]) {
-    const container = ensureElement<HTMLElement>('.gallery');
-    container.innerHTML = '';
-        
-    products.forEach(product => {
-        const cardElement = cloneTemplate(cardCatalogTemplate);
-        const previewElement = cloneTemplate(cardPreviewTemplate);
-        const card = new CardItemGallary(cardElement, {
-            onClick: () => new PreviewCard(previewElement)
-        });
-            
-        card.id = product.id;
-        card.title = product.title;
-        card.price = product.price;
-        card.image = product.image;
-        card.category = product.category;
-            
-        container.appendChild(card.render());
-    });
-}
+//Отображение карточек на главной странице
+events.on('products:changed', () => {
+    page.catalog = productsData.products;
+});
+
+events.on('card:add', (data: { product: IProduct }) => {
+    productsData.toggleOrderedProduct(data.product.id, true);
+    page.counter = productsData.order.items.length;
+});

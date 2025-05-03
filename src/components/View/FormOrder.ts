@@ -21,7 +21,7 @@ export interface IFormOrder {
 //             items: []
 //         };
 
-export class FormOder implements IFormOrder {
+export class FormOrder implements IFormOrder {
     errors: HTMLElement;
     payment: string;
     formOrder: HTMLFormElement;

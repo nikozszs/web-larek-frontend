@@ -1,54 +1,63 @@
 import { ensureElement } from "../../utils/utils";
-import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
-interface IFormState {
-    valid: boolean;
-    errors: string[];
+// export interface IFormState {
+//     valid: boolean;
+//     errors: string[];
+// }
+
+export interface IFormOrder {
+    errors: HTMLElement;
+    payment: string;
+    formOrder: HTMLFormElement;
+    paymentButton: HTMLButtonElement[];
+    render(): HTMLElement;
 }
 
-export class Form<T> extends Component<IFormState> {
-    protected _submit: HTMLButtonElement;
-    protected _errors: HTMLElement;
+// order: IOrder = {
+//             email: '',
+//             phone: '',
+//             address: '',
+//             items: []
+//         };
 
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {
-        super(container);
+export class FormOder implements IFormOrder {
+    errors: HTMLElement;
+    payment: string;
+    formOrder: HTMLFormElement;
+    paymentButton: HTMLButtonElement[];
+    submitButton: HTMLButtonElement;
 
-        this._submit = ensureElement<HTMLButtonElement>('button[type=submit]', this.container);
-        this._errors = ensureElement<HTMLElement>('.form__errors', this.container);
+    constructor(template: HTMLTemplateElement, protected events: IEvents) {
+        this.submitButton = ensureElement<HTMLButtonElement>('button[type=submit]');
+        this.errors = ensureElement<HTMLElement>('.form__errors');
+        this.formOrder = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
+        this.paymentButton = Array.from(this.formOrder.querySelectorAll('.button_alt'))
 
-        this.container.addEventListener('input', (e: Event) => {
+        this.formOrder.addEventListener('input', (e: Event) => {
             const target = e.target as HTMLInputElement;
-            const field = target.name as keyof T;
+            const field = target.name;
             const value = target.value;
-            this.onInputChange(field, value);
+            this.events.emit('order:changeAddress', { field, value });
         });
 
-        this.container.addEventListener('submit', (e: Event) => {
+        this.formOrder.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            this.events.emit(`${this.container.name}:submit`);
+            this.events.emit('contacts:open');
         });
     }
 
-    protected onInputChange(field: keyof T, value: string) {
-        this.events.emit(`${this.container.name}.${String(field)}:change`, {
-            field,
-            value
-        });
+    set _errors(value: boolean) {
+        this.submitButton.disabled = !value;
     }
 
-    set valid(value: boolean) {
-        this._submit.disabled = !value;
+    set _payment(select: String) {
+        this.paymentButton.forEach(btn => {
+            btn.classList.toggle('button_alt-active', btn.name === select)
+        })
     }
 
-    set errors(value: string) {
-        this.setText(this._errors, value);
-    }
-
-    render(state: Partial<T> & IFormState) {
-        const {valid, errors, ...inputs} = state;
-        super.render({valid, errors});
-        Object.assign(this, inputs);
-        return this.container;
+    render() {
+        return this.formOrder;
     }
 }

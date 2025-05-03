@@ -61,14 +61,14 @@ events.on('products:changed', () => {
 
 
 // Отображение превью карточки 
-events.on('preview:add', (item: IProduct) => { productsData.getPreview})
+events.on('preview:add', (product: IProduct) => {
+    productsData.setPreview(product)
+})
 
 
 //Ответ с сервера
 api.getProducts()
-    .then(products => {
-        productsData.setCatalog(products);
-    })
+    .then(productsData.getCatalog.bind(productsData))
     .catch((error) => {
         console.error(error)
     })

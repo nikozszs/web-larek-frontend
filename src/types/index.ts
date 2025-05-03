@@ -14,18 +14,11 @@ export interface IProduct {
 
 //здесь хранится массив карточек и превью
 export interface IProductsData {
-    preview: string | null;
-    basket: string[];
-    order: IOrder | null;
-    loading: boolean;
+    preview: IProduct | null;
     catalog: IProduct[];
-    toggleOrderedProduct(id: string, isIncluded: boolean): void;
-    clearBasket(): void;
-    getTotal(): number;
+    setPreview(item: IProduct): void; 
     getProduct(id: string): IProduct;
-    deleteProduct(id: string): void;
-    updateProduct(product: IProduct, payload: Function | null): void;
-    checkValidation(data: Record<keyof ModalPayment | keyof ModalContacts, string>): boolean;
+    getCatalog(): IProduct[];
 }
 
 export interface IUserData {
@@ -64,7 +57,8 @@ export interface IOrderForm {
 export interface IOrder extends IOrderForm {
     payment?: string;
     total?: number;
-    items?: string[]
+    items?: string[],
+    
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

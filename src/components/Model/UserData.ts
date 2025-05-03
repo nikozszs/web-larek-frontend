@@ -1,4 +1,4 @@
-import { FormErrors, IOrder, IUserData, ModalContacts, ModalPayment } from "../../types";
+import { FormErrors, IOrder, IProduct, IUserData, ModalContacts, ModalPayment } from "../../types";
 import { IEvents } from "../base/events";
 
 export class UserData implements IUserData {
@@ -9,6 +9,7 @@ export class UserData implements IUserData {
     events: IEvents;
     total: number;
     errors: FormErrors = {};
+    productsInBasket: IProduct[];
 
     constructor(events: IEvents) {
         this.events = events;
@@ -17,6 +18,7 @@ export class UserData implements IUserData {
         this.phone = '';
         this.total = 0;
         this.payment = '';
+        this.productsInBasket = [];
     }
 
     getInfo(): ModalContacts | ModalPayment {
@@ -77,5 +79,13 @@ export class UserData implements IUserData {
             this.phone.trim() !== '' &&
             this.email.trim() !== ''
         );
+    }
+
+    getTotal() {
+        let total = 0;
+        this.productsInBasket.forEach(elem => {
+            total = total + elem.price;
+        });
+        return total;
     }
 }

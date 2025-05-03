@@ -29,7 +29,7 @@ export class FormOrder implements IFormOrder {
     submitButton: HTMLButtonElement;
 
     constructor(template: HTMLTemplateElement, protected events: IEvents) {
-        this.submitButton = ensureElement<HTMLButtonElement>('button[type=submit]');
+        this.submitButton = ensureElement<HTMLButtonElement>('.button');
         this.errors = ensureElement<HTMLElement>('.form__errors');
         this.formOrder = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
         this.paymentButton = Array.from(this.formOrder.querySelectorAll('.button_alt'))

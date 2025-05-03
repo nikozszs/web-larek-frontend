@@ -11,7 +11,8 @@ export class CardCatalog extends CardBase<IProduct> {
     protected _image: HTMLImageElement;
     protected _category: HTMLElement;
 
-    constructor(template: HTMLTemplateElement, protected events: IEvents, container?: HTMLElement, actions?: IActions) {
+    constructor(template: HTMLTemplateElement, protected events: IEvents, 
+        container?: HTMLElement, actions?: IActions) {
         super(template, events, container)
             this._image = ensureElement('.card__image', container) as HTMLImageElement;
             this._category = ensureElement<HTMLElement>('.card__category', container);

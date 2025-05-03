@@ -17,6 +17,7 @@ export class Basket extends Component<IBasketView> {
     protected _deletebutton: HTMLElement;
     protected _submitbutton: HTMLElement;
     protected _basketTemplate: HTMLElement;
+    protected _items: HTMLElement[] = [];
 
     constructor(container: HTMLElement, protected events: EventEmitter, actions?: { onDelete: IBasketView['onClick']; onSubmit: IBasketView['onClick']; }) {
         super(container);
@@ -41,10 +42,17 @@ export class Basket extends Component<IBasketView> {
         this.items = [];
     }
 
+    get items(): HTMLElement[] {
+        return [...this._items];
+    }
+
     set items(items: HTMLElement[]) {
+        this._items = [...items]
         if (items.length) {
             this._list.replaceChildren(...items);
+            this._deletebutton.removeAttribute('disabled')
         } else {
+            this._deletebutton.setAttribute('disabled', 'disabled')
             this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
             }));
@@ -59,7 +67,12 @@ export class Basket extends Component<IBasketView> {
         }
     }
 
-    set total(total: number) {
+    setTotal(total: number): void {
         this.setText(this._total, formatNumber(total));
+    }
+
+    clear(): void {
+        this.items = [];
+        this.setTotal(0);
     }
 }

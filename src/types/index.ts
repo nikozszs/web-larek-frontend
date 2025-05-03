@@ -12,7 +12,6 @@ export interface IProduct {
     count?: number;
 }
 
-//здесь хранится массив карточек и превью
 export interface IProductsData {
     preview: IProduct | null;
     catalog: IProduct[];
@@ -58,7 +57,6 @@ export interface IOrder extends IOrderForm {
     payment?: string;
     total?: number;
     items?: string[],
-    
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

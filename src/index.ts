@@ -16,6 +16,7 @@ import { IProduct, IProductsData } from './types';
 import { isPlainObject } from 'lodash';
 import { FormContacts } from './components/View/FormContacts';
 import { BasketData } from './components/Model/BasketData';
+import { FormOrder } from './components/View/FormOrder';
 
 
 //экземпляры классов
@@ -46,18 +47,27 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 // Переиспользуемые части интерфейса
 const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket), events);
 const basket = new Basket(cloneTemplate(templates.basket), events);
-//const formContacts = new FormContacts(templates.contacts, events);
-//const formOrder = new FormOrder(templates.order, events);
-const basketModel = new BasketData;
+const formContacts = new FormContacts(templates.contacts, events);
+const formOrder = new FormOrder(templates.order, events);
+
 
 //Отображение карточек на главной странице
-events.on('products:changed', () => {
-    const gallery = ensureElement<HTMLElement>('.gallery');
-    productsData.catalog.forEach(item => {
-        const card = new CardCatalog(templates.cardCatalog, events);
-        gallery.append(card.render(item));
-      });
-});
+events.on('products:changed', (data: {catalog: IProduct[], count: number}) => 
+{
+    const gallary = ensureElement<HTMLElement>('.gallery');
+    gallary.innerHTML = '';
+    data.catalog.forEach(item => {
+        const cardCatalog = new CardCatalog(
+            templates.cardCatalog,
+            events,
+            undefined,
+            {
+                onClick: () => events.emit('card:select', item)
+            }
+        );
+        gallary.appendChild(cardCatalog.render(item))
+    })
+})
 
 
 // Отображение превью карточки 
@@ -68,7 +78,16 @@ events.on('preview:add', (product: IProduct) => {
 
 //Ответ с сервера
 api.getProducts()
-    .then(productsData.getCatalog.bind(productsData))
+    .then(products => productsData.catalog = products)
     .catch((error) => {
         console.error(error)
     })
+
+// Открыть корзину
+events.on('basketModal:open', () => {
+    basket.setTotal(userData.getTotal());
+    let i = 0;
+    basket.items = userData.productsInBasket.map((item) => {
+        const cardBasket = new CardBasket(templates.cardBasket, events.emit('order:delete'. item))
+    })
+})

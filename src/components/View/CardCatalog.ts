@@ -10,12 +10,15 @@ export interface IActions {
 export class CardCatalog extends CardBase<IProduct> {
     protected _image: HTMLImageElement;
     protected _category: HTMLElement;
+    protected _container: HTMLElement;
 
     constructor(template: HTMLTemplateElement, protected events: IEvents, 
-        container?: HTMLElement, actions?: IActions) {
-        super(template, events, container)
-            this._image = ensureElement('.card__image', container) as HTMLImageElement;
-            this._category = ensureElement<HTMLElement>('.card__category', container);
+        container: HTMLElement, actions?: IActions) {
+            const containerCatalog = ensureElement<HTMLElement>('.catalog__items');
+            super(template, events, container)
+            this._container = containerCatalog;
+            this._image = ensureElement('.card__image', this.container) as HTMLImageElement;
+            this._category = ensureElement<HTMLElement>('.card__category', this.container);
 
             if (actions?.onClick) {
                 this.container.style.cursor = 'pointer';
@@ -31,7 +34,10 @@ export class CardCatalog extends CardBase<IProduct> {
         if (data.category) {
             this.category = data.category;
         }
-        return this.container;
+        if (!this.container.parentElement){
+            this._container.appendChild(this.container)
+        }
+        return this.container
     }
 
     get image(): string {

@@ -25,9 +25,9 @@ export class FormContacts implements IFormContacts {
     submitButton: HTMLButtonElement
 
     constructor(template: HTMLTemplateElement, protected events: IEvents) {
-        this.submitButton = ensureElement<HTMLButtonElement>('.button');
-        this.errors = ensureElement<HTMLElement>('.form__errors');
         this.formContacts = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
+        this.submitButton = ensureElement<HTMLButtonElement>('.button');
+        this.errors = this.formContacts.querySelector('.form__errors');
         this.inputs = Array.from(this.formContacts.querySelectorAll('.form__input'))
 
         this.inputs.forEach(input => {

@@ -15,8 +15,8 @@ export class CardBase<T extends IProduct> extends Component<T> {
     constructor(protected template: HTMLTemplateElement, protected events: IEvents, container?: HTMLElement) {
         super(container);
         this._events = events;
-        this._title = ensureElement<HTMLElement>('.card__title', container);
-        this._price = ensureElement<HTMLElement>('.card__price', container);
+        this._title = ensureElement<HTMLElement>('.card__title', this.container);
+        this._price = ensureElement<HTMLElement>('.card__price', this.container);
     }
 
     set id(value: string) {

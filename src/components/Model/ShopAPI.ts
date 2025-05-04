@@ -2,6 +2,7 @@ import { IOrder, IOrderResult, IProduct } from "../../types";
 import { Api, ApiListResponse } from "../base/api";
 
 export interface IShopAPI {
+    items: IProduct[];
     getProducts: () => Promise<IProduct[]>;
     getProduct: (id: string) => Promise<IProduct>;
     orderProducts: (order: IOrder) => Promise<IOrderResult>;
@@ -10,6 +11,7 @@ export interface IShopAPI {
 
 export class ShopAPI extends Api implements IShopAPI {
     readonly cdn: string;
+    items: IProduct[];
 
     constructor(cdn: string, baseUrl: string, options?: RequestInit) {
         super(baseUrl, options);

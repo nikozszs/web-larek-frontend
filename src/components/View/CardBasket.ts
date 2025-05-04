@@ -9,8 +9,8 @@ export class CardBasket extends CardBase<IProduct> {
 
     constructor(protected template: HTMLTemplateElement, protected events: IEvents, container?: HTMLElement) {
         super(template, events, container);
-        this._index = ensureElement<HTMLElement>('.card__title', container);
-        this._deletebutton = ensureElement<HTMLButtonElement>('.basket__item-delete', container);
+        this._index = ensureElement<HTMLElement>('.card__title', this.container);
+        this._deletebutton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
         this._deletebutton.addEventListener('click', (evt) => {
             evt.stopPropagation();
             this.events.emit('cardBasket:remove', { id: this.id});

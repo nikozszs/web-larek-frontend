@@ -52,23 +52,34 @@ const formOrder = new FormOrder(templates.order, events);
 
 
 //Отображение карточек на главной странице
-events.on('products:changed', (data: {catalog: IProduct[], count: number}) => 
-{
-    const gallary = ensureElement<HTMLElement>('.gallery');
-    gallary.innerHTML = '';
-    data.catalog.forEach(item => {
-        const cardCatalog = new CardCatalog(
-            templates.cardCatalog,
-            events,
-            undefined,
-            {
-                onClick: () => events.emit('card:select', item)
-            }
-        );
-        gallary.appendChild(cardCatalog.render(item))
-    })
+const product: IProduct = {
+        id: "854cef69-976d-4c2a-a18c-2aa45046c390",
+        title: "+1 час в сутках",
+        price: 750,
+        image: "/5_Dots.svg",
+        category: "софт-скил",
+        description:  "Если планируете решать задачи в тренажёре, берите два."
+    
+}
+const catalogContainer = ensureElement<HTMLElement>('.catalog__items')
+const testCard = new CardCatalog(
+    templates.cardCatalog,
+    events,
+    catalogContainer,
+    {
+        onClick: () => console.log('Карточка нажата')
+    }
+);
+const render = testCard.render(product)
+console.log('экземпляр', testCard)
+console.log('рендер', render)
+console.log('свойства', {
+    id: testCard.id,
+    title: testCard.title,
+    price: testCard.price,
+    image: testCard.image,
+    category: testCard.category
 })
-
 
 // Отображение превью карточки 
 events.on('preview:add', (product: IProduct) => {
@@ -84,10 +95,3 @@ api.getProducts()
     })
 
 // Открыть корзину
-events.on('basketModal:open', () => {
-    basket.setTotal(userData.getTotal());
-    let i = 0;
-    basket.items = userData.productsInBasket.map((item) => {
-        const cardBasket = new CardBasket(templates.cardBasket, events.emit('order:delete'. item))
-    })
-})

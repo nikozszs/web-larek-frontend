@@ -6,6 +6,8 @@ interface IBasketView {
     items: HTMLElement[];
     total: number;
     selected: string[];
+    deletebutton: HTMLElement;
+    submitbutton: HTMLElement;
     onClick?: (event: MouseEvent) => void;
     onSubmit?: (price: number) => void;
     onDelete?: (id: string) => void;
@@ -50,9 +52,7 @@ export class Basket extends Component<IBasketView> {
         this._items = [...items]
         if (items.length) {
             this._list.replaceChildren(...items);
-            this._deletebutton.removeAttribute('disabled')
         } else {
-            this._deletebutton.setAttribute('disabled', 'disabled')
             this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
             }));

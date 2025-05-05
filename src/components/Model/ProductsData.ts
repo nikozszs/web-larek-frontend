@@ -22,6 +22,7 @@ export class ProductsData extends Model<IProductsData> implements IProductsData 
 
     set catalog(data: IProduct[]) {
         this._catalog = [...data];
+        console.log(data)
         this.events.emit('products:changed'), {
             catalog: this._catalog,
             count: this._catalog.length 

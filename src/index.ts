@@ -3,7 +3,6 @@ import { Modal } from './components/View/Modal';
 import { Basket } from './components/View/Basket';
 import { Page } from './components/View/Page';
 import { UserData } from './components/Model/UserData';
-//import { Order } from './components/Order';
 import { ShopAPI } from './components/Model/ShopAPI';
 import './scss/styles.scss';
 import { API_URL, CDN_URL } from './utils/constants';
@@ -88,6 +87,7 @@ events.on('preview:add', (product: IProduct) => {
 
 
 //Ответ с сервера
+
 api.getProducts()
     .then(products => productsData.catalog = products)
     .catch((error) => {

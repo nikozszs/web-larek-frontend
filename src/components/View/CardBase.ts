@@ -2,7 +2,6 @@
 // расширяем и добавляем картинку, категорию.От него (от карточки каталога) наследуемся и еще расширяем, добавляя подробное описание
 
 import { IProduct } from "../../types";
-import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
@@ -12,11 +11,11 @@ export class CardBase<T extends IProduct> extends Component<T> {
     protected _events: IEvents;
     protected _id: string = '';
 
-    constructor(protected template: HTMLTemplateElement, protected events: IEvents, container?: HTMLElement) {
+    constructor(protected template: HTMLTemplateElement, protected events: IEvents, container: HTMLElement) {
         super(container);
         this._events = events;
-        this._title = ensureElement<HTMLElement>('.card__title', this.container);
-        this._price = ensureElement<HTMLElement>('.card__price', this.container);
+        this._title = this.container.querySelector('.card__title');
+        this._price = this.container.querySelector('.card__price');
     }
 
     set id(value: string) {

@@ -1,4 +1,6 @@
+import { IActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
+import { Component } from "../base/component";
 import { IEvents } from "../base/events";
 
 // export interface IFormState {
@@ -21,29 +23,38 @@ export interface IFormOrder {
 //             items: []
 //         };
 
-export class FormOrder implements IFormOrder {
+export class FormOrder extends Component<IFormOrder> {
     errors: HTMLElement;
     payment: string;
-    formOrder: HTMLFormElement;
     paymentButton: HTMLButtonElement[];
     submitButton: HTMLButtonElement;
+    input: HTMLInputElement;
 
-    constructor(template: HTMLTemplateElement, protected events: IEvents) {
-        this.formOrder = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
-        this.submitButton = ensureElement<HTMLButtonElement>('.button');
-        this.errors = this.formOrder.querySelector('.form__errors');
-        this.paymentButton = Array.from(this.formOrder.querySelectorAll('.button_alt'))
+    constructor(container: HTMLElement, protected events: IEvents, actions?: IActions) {
+        super(container)
+        this.submitButton = ensureElement<HTMLButtonElement>('.button', container);
+        this.errors = ensureElement<HTMLElement>('.form__errors');
+        this.input = ensureElement<HTMLInputElement>(`.form__input`, container);
+        this.paymentButton = Array.from(this.container.querySelectorAll('.button_alt'))
 
-        this.formOrder.addEventListener('input', (e: Event) => {
+        this.container.addEventListener('input', (e: Event) => {
             const target = e.target as HTMLInputElement;
-            const field = target.name;
+            const field = target.name as string;
             const value = target.value;
-            this.events.emit('order:changeAddress', { field, value });
+            this.onInputChange(field, value);
         });
 
-        this.formOrder.addEventListener('submit', (e: Event) => {
+        this.container.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            this.events.emit('contacts:open');
+            actions?.onSubmit?.(parseInt(this.input.value));
+            return false;
+        });
+    }
+
+    protected onInputChange(field: string, value: string) {
+        this.events.emit(`${this.container}.${String(field)}:change`, {
+            field,
+            value
         });
     }
 
@@ -58,6 +69,6 @@ export class FormOrder implements IFormOrder {
     }
 
     render() {
-        return this.formOrder;
+        return this.container;
     }
 }

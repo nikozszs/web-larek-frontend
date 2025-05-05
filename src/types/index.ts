@@ -1,5 +1,9 @@
 export type CategoryStatus = 'софт-скил' | 'другое' | 'дополнительное' | 'кнопка' | 'хард-скил';
 
+export interface IActions {
+    onClick?: (event: MouseEvent) => void;
+    onSubmit?: (price: number) => void;
+}
 export interface IProduct {
     id: string,
     title?: string,
@@ -56,7 +60,7 @@ export interface IOrderForm {
 export interface IOrder extends IOrderForm {
     payment?: string;
     total?: number;
-    items?: string[],
+    items?: string[];
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

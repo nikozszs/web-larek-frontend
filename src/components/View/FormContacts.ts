@@ -2,55 +2,62 @@
 // копию с него сделать и вторую форму реализовать. 
 import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/events";
+import { IActions } from "../../types";
+import { Component } from "../base/component";
 
 export interface IFormContacts {
     errors: HTMLElement;
     formContacts: HTMLFormElement;
-    inputs: HTMLInputElement[];
+    input: HTMLInputElement;
     submitButton: HTMLButtonElement;
     render(): HTMLElement;
 }
 
-// order: IOrder = {
-//             email: '',
-//             phone: '',
-//             address: '',
-//             items: []
-//         };
-
-export class FormContacts implements IFormContacts {
+export class FormContacts extends Component<IFormContacts> {
     errors: HTMLElement;
-    formContacts: HTMLFormElement;
-    inputs: HTMLInputElement[];
-    submitButton: HTMLButtonElement
+    input: HTMLInputElement;
+    submitButton: HTMLButtonElement;
 
-    constructor(template: HTMLTemplateElement, protected events: IEvents) {
-        this.formContacts = template.content.querySelector('.form').cloneNode(true) as HTMLFormElement;
-        this.submitButton = ensureElement<HTMLButtonElement>('.button');
-        this.errors = this.formContacts.querySelector('.form__errors');
-        this.inputs = Array.from(this.formContacts.querySelectorAll('.form__input'))
+    constructor(protected container: HTMLElement, protected events: IEvents, actions?: IActions) {
+        super(container)
+        this.submitButton = ensureElement<HTMLButtonElement>('.button', container);
+        this.errors = ensureElement<HTMLElement>('.form__errors');
+        this.input = ensureElement<HTMLInputElement>(`.form__input`, container);
 
-        this.inputs.forEach(input => {
-                input.addEventListener('input', (e: Event) => {
-                const target = e.target as HTMLInputElement;
-                const field = target.name;
-                const value = target.value;
-                this.events.emit('contacts:changeInput', { field, value })
-            })
+        this.container.addEventListener('input', (e: Event) => {
+            const target = e.target as HTMLInputElement;
+            const field = target.name as string;
+            const value = target.value;
+            this.onInputChange(field, value);
         });
 
-
-        this.formContacts.addEventListener('submit', (e: Event) => {
+        this.container.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            this.events.emit('success:open');
+            actions?.onSubmit?.(parseInt(this.input.value));
+            return false;
         });
     }
+
+    protected onInputChange(field: string, value: string) {
+        this.events.emit(`${this.container}.${String(field)}:change`, {
+            field,
+            value
+        });
+    }
+
+    // set phone(value: string) {
+    //     (this.container.elements.namedItem('phone') as HTMLInputElement).value = value;
+    // }
+
+    // set email(value: string) {
+    //     (this.container.elements.namedItem('email') as HTMLInputElement).value = value;
+    // }
 
     set _errors(value: boolean) {
         this.submitButton.disabled = !value;
     }
 
     render() {
-        return this.formContacts;
+        return this.container;
     }
 }

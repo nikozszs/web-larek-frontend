@@ -11,11 +11,11 @@ export class CardBase<T extends IProduct> extends Component<T> {
     protected _events: IEvents;
     protected _id: string = '';
 
-    constructor(protected template: HTMLTemplateElement, protected events: IEvents, container: HTMLElement) {
+    constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
         this._events = events;
-        this._title = this.container.querySelector('.card__title');
-        this._price = this.container.querySelector('.card__price');
+        this._title = container.querySelector('.card__title');
+        this._price = container.querySelector('.card__price');
     }
 
     set id(value: string) {
@@ -36,10 +36,5 @@ export class CardBase<T extends IProduct> extends Component<T> {
 
     set price(value: number | null) {
         this.setText(this._price, value ? `${value} синапсов` : 'Бесценно');
-    }
-
-    render(data: Partial<T>): HTMLElement {
-        Object.assign(this as object, data);
-        return this.container;
     }
 }

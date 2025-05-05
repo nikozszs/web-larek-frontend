@@ -60,11 +60,8 @@ const product: IProduct = {
         description:  "Если планируете решать задачи в тренажёре, берите два."
     
 }
-const catalogContainer = ensureElement<HTMLElement>('.catalog__items')
-const testCard = new CardCatalog(
-    templates.cardCatalog,
-    events,
-    catalogContainer,
+
+const testCard = new CardCatalog(templates.cardCatalog, events,
     {
         onClick: () => console.log('Карточка нажата')
     }

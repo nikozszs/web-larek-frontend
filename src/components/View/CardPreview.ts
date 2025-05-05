@@ -1,14 +1,13 @@
-import { IActions, PreviewCard } from "../../types";
+import { IActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
-import { IEvents } from "../base/events";
 import { CardCatalog } from "./CardCatalog";
 
 export class CardPreview extends CardCatalog {
     protected _description: HTMLElement;
     protected _button: HTMLButtonElement;
 
-    constructor(container: HTMLElement, protected events: IEvents, actions?: IActions){
-        super(container, events);
+    constructor(container: HTMLElement, actions?: IActions){
+        super(container, actions);
         this._description = ensureElement<HTMLElement>('.card__text', container);
         this._button = ensureElement<HTMLButtonElement>('.button', container);
 

@@ -1,52 +1,59 @@
-import { IProduct } from "../../types";
+import { BasketCard, IOrder } from "../../types";
 
 export interface IBasketData {
     clearBasket(): void;
     getCounter: () => number;
-    products: IProduct[];
-    deleteProduct(value: IProduct): void;
-    selectedProduct(data: IProduct): void;
+    basketProducts: BasketCard[];
+    deleteProduct(value: BasketCard): void;
+    selectedProduct(data: BasketCard): void;
     totalPrice: () => number;
 }
 
 export class BasketData implements IBasketData {
-    protected _basketProducts: IProduct[];
+    order: IOrder = {
+            email: '',
+            phone: '',
+            address: '',
+            payment: '',
+            items:[]
+        }
+    basketProducts: BasketCard[];
 
     constructor() {
-        this._basketProducts = [];
+        this.basketProducts = [];
     }
 
-    clearBasket(): void {
-        this._basketProducts = [];
+    clearBasket(){
+        this.basketProducts = [];
     }
 
     getCounter() {
-        return this._basketProducts.length;
+        return this.basketProducts.length;
     }
 
-    set products(data: IProduct[]) {
-        this._basketProducts = data;
+    set products(data: BasketCard[]) {
+        this.basketProducts = data;
     }
 
     get products() {
-        return this._basketProducts;
+        return this.basketProducts;
     }
 
-    deleteProduct(value: IProduct): void {
-        const index = this._basketProducts.indexOf(value);
+    deleteProduct(value: BasketCard): void {
+        const index = this.basketProducts.indexOf(value);
         if (index >= 0) {
-            this._basketProducts.splice(index,1);
+            this.basketProducts.splice(index,1);
         }
     }
 
     //добавление карточки в корзину
-    selectedProduct(data: IProduct): void {
-        this._basketProducts.push(data);
+    selectedProduct(data: BasketCard): void {
+        this.basketProducts.push(data);
     }
 
     totalPrice() {
         let total = 0;
-        this._basketProducts.forEach(product => {
+        this.basketProducts.forEach(product => {
             total = total + product.price;
         })
         return total;

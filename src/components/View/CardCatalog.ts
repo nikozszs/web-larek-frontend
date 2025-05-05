@@ -1,14 +1,13 @@
-import { CardGallary, IActions, IProduct } from "../../types";
+import { IActions, IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
-import { IEvents } from "../base/events";
 import { CardBase } from "./CardBase";
 
 export class CardCatalog extends CardBase<IProduct> {
     protected _image: HTMLImageElement;
     protected _category: HTMLElement;
 
-    constructor(container: HTMLElement, protected events: IEvents, actions?: IActions) {
-            super(container, events)
+    constructor(container: HTMLElement, actions?: IActions) {
+            super(container, actions)
             this._image = ensureElement<HTMLImageElement>('.card__image', container);
             this._category = ensureElement<HTMLElement>('.card__category', container);
 

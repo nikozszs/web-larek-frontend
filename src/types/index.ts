@@ -4,24 +4,33 @@ export interface IActions {
     onClick?: (event: MouseEvent) => void;
     onSubmit?: (price: number) => void;
 }
+
+
+export type ProductsCatalog = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'category'>;
+
+export type PreviewCard = Pick<IProduct, 'id' | 'image' | 'price' | 'description'| 'title' | 'category'>;
+
+export type BasketCard = Pick<IProduct, 'id' | 'price' | 'title' | 'index'>;
+
+
 export interface IProduct {
     id: string,
-    title?: string,
+    title: string,
     price: number | null,
     image: string,
-    category?: CategoryStatus,
-    description?: string,
-    totalPrice?: number;
-    index?: number;
-    count?: number;
+    category: CategoryStatus,
+    description: string,
+    index: number;
+    count: number;
 }
 
-export interface IProductsData {
-    preview: IProduct | null;
-    catalog: IProduct[];
-    setPreview(item: IProduct): void; 
-    getProduct(id: string): IProduct;
-    getCatalog(): IProduct[];
+export interface IAppState {
+    catalog: ProductsCatalog[];
+    order: IOrder;
+    errors: FormErrors;
+    preview: string | null;
+    loading: boolean;
+    setPreview(item: PreviewCard): void;
 }
 
 export interface IUserData {
@@ -30,7 +39,7 @@ export interface IUserData {
     phone: string;
     payment: string;
     total: number;
-    getInfo(): ModalContacts | ModalPayment;
+    getInfo(): string;
     setInfo(userData: IUserData): void;
     setAddress(field: string, value: string): void;
     validateContacts(): boolean;
@@ -39,28 +48,16 @@ export interface IUserData {
     getOrder(): object;
 }
 
-export type PreviewCard = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'description' | 'category'>;
-
-export type CardGallary = Pick<IProduct, 'id' | 'price' | 'title' | 'category' | 'image'>;
-
-export type TCardBasket = Pick<IProduct, 'id' | 'price' | 'title' | 'totalPrice' | 'index'>;
-
-export type ModalPayment = Pick<IUserData, 'address' | 'payment'>;
-
-export type ModalContacts = Pick<IUserData, 'email' | 'payment' | 'phone'>;
-
-export type ModalSuccess = Pick<IProduct, 'title' | 'totalPrice'>;
-
 export interface IOrderForm {
     email: string;
     phone: string;
     address: string;
+    payment: string;
 }
 
 export interface IOrder extends IOrderForm {
-    payment?: string;
     total?: number;
-    items?: string[];
+    items: string[];
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

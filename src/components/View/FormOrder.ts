@@ -1,12 +1,6 @@
-import { IActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
 import { IEvents } from "../base/events";
-
-// export interface IFormState {
-//     valid: boolean;
-//     errors: string[];
-// }
 
 export interface IFormOrder {
     errors: HTMLElement;
@@ -16,13 +10,6 @@ export interface IFormOrder {
     render(): HTMLElement;
 }
 
-// order: IOrder = {
-//             email: '',
-//             phone: '',
-//             address: '',
-//             items: []
-//         };
-
 export class FormOrder extends Component<IFormOrder> {
     errors: HTMLElement;
     payment: string;
@@ -30,7 +17,7 @@ export class FormOrder extends Component<IFormOrder> {
     submitButton: HTMLButtonElement;
     input: HTMLInputElement;
 
-    constructor(container: HTMLElement, protected events: IEvents, actions?: IActions) {
+    constructor(container: HTMLElement, protected events: IEvents) {
         super(container)
         this.submitButton = ensureElement<HTMLButtonElement>('.button', container);
         this.errors = ensureElement<HTMLElement>('.form__errors');
@@ -46,7 +33,7 @@ export class FormOrder extends Component<IFormOrder> {
 
         this.container.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            actions?.onSubmit?.(parseInt(this.input.value));
+            this.events.emit(`${this.container}:submit`);
             return false;
         });
     }

@@ -2,7 +2,6 @@
 // копию с него сделать и вторую форму реализовать. 
 import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/events";
-import { IActions } from "../../types";
 import { Component } from "../base/component";
 
 export interface IFormContacts {
@@ -18,7 +17,7 @@ export class FormContacts extends Component<IFormContacts> {
     input: HTMLInputElement;
     submitButton: HTMLButtonElement;
 
-    constructor(protected container: HTMLElement, protected events: IEvents, actions?: IActions) {
+    constructor(protected container: HTMLElement, protected events: IEvents) {
         super(container)
         this.submitButton = ensureElement<HTMLButtonElement>('.button', container);
         this.errors = ensureElement<HTMLElement>('.form__errors');
@@ -33,7 +32,7 @@ export class FormContacts extends Component<IFormContacts> {
 
         this.container.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            actions?.onSubmit?.(parseInt(this.input.value));
+            this.events.emit(`${this.container}:submit`);
             return false;
         });
     }

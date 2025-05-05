@@ -13,7 +13,7 @@ export class CardBasket extends CardBase<IProduct> {
 
         if (!this._deletebutton) {
             this._deletebutton.addEventListener('click', (evt) => {
-                actions.onClick(evt)
+                actions?.onClick(evt)
         })}
     }
 

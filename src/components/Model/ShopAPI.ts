@@ -1,8 +1,8 @@
-import { IOrder, IOrderResult, IProduct } from "../../types";
+import { IOrder, IOrderResult, IProduct, ProductsCatalog } from "../../types";
 import { Api, ApiListResponse } from "../base/api";
 
 export interface IShopAPI {
-    items: IProduct[];
+    catalog: ProductsCatalog[];
     getProducts: () => Promise<IProduct[]>;
     getProduct: (id: string) => Promise<IProduct>;
     orderProducts: (order: IOrder) => Promise<IOrderResult>;
@@ -11,7 +11,7 @@ export interface IShopAPI {
 
 export class ShopAPI extends Api implements IShopAPI {
     readonly cdn: string;
-    items: IProduct[];
+    catalog: ProductsCatalog[];
 
     constructor(cdn: string, baseUrl: string, options?: RequestInit) {
         super(baseUrl, options);

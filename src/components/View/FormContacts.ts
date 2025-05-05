@@ -20,7 +20,7 @@ export class FormContacts extends Component<IFormContacts> {
     constructor(protected container: HTMLElement, protected events: IEvents) {
         super(container)
         this.submitButton = ensureElement<HTMLButtonElement>('.button', container);
-        this.errors = ensureElement<HTMLElement>('.form__errors');
+        this.errors = ensureElement<HTMLElement>('.form__errors', container);
         this.input = ensureElement<HTMLInputElement>(`.form__input`, container);
 
         this.container.addEventListener('input', (e: Event) => {

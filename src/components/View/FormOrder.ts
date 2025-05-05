@@ -20,7 +20,7 @@ export class FormOrder extends Component<IFormOrder> {
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container)
         this.submitButton = ensureElement<HTMLButtonElement>('.button', container);
-        this.errors = ensureElement<HTMLElement>('.form__errors');
+        this.errors = ensureElement<HTMLElement>('.form__errors', container);
         this.input = ensureElement<HTMLInputElement>(`.form__input`, container);
         this.paymentButton = Array.from(this.container.querySelectorAll('.button_alt'))
 

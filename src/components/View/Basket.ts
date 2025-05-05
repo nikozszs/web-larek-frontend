@@ -1,4 +1,3 @@
-import { IActions } from "../../types";
 import { createElement, ensureElement, formatNumber } from "../../utils/utils";
 import { Component } from "../base/component";
 import { EventEmitter } from "../base/events";
@@ -18,7 +17,7 @@ export class Basket extends Component<IBasketView> {
     protected _basketTemplate: HTMLElement;
     protected _items: HTMLElement[] = [];
 
-    constructor(container: HTMLElement, protected events: EventEmitter, actions?:IActions) {
+    constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
         this._list = ensureElement<HTMLElement>('.basket__list', this.container);
         this._total = this.container.querySelector('.basket__price');

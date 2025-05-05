@@ -2,7 +2,11 @@ import { IAppState, ProductsCatalog, IOrder, PreviewCard, FormErrors } from "../
 import _ from "lodash";
 import { Model } from "../base/Model";
 
-export class AppState extends Model<IAppState> {
+export type CatalogChangeEvent = {
+    catalog: ProductsModel[]
+};
+
+export class ProductsModel extends Model<IAppState> {
     catalog: ProductsCatalog[];
     loading: boolean;
     preview: PreviewCard | null;

@@ -4,9 +4,8 @@ export interface IBasketData {
     clearBasket(): void;
     getCounter: () => number;
     basketProducts: BasketCard[];
-    deleteProduct(id: string): void;
+    deleteProduct(value: BasketCard): void;
     selectedProduct(data: BasketCard): void;
-    totalPrice: () => number;
 }
 
 export class BasketData implements IBasketData {
@@ -15,7 +14,6 @@ export class BasketData implements IBasketData {
             phone: '',
             address: '',
             payment: '',
-            total: null,
             items:[]
         }
     basketProducts: BasketCard[] = [];
@@ -40,26 +38,27 @@ export class BasketData implements IBasketData {
         return this.basketProducts;
     }
 
-    deleteProduct(id: string): void {
-        this.basketProducts = this.basketProducts.filter(item => item.id !== id);
-        this.updateOrder();
+    deleteProduct(value: BasketCard): void {
+        const index = this.basketProducts.indexOf(value);
+        if (index >= 0) {
+            this.basketProducts.splice(index,1);
+        }
+    }
+
+    setItems() {
+        this.order.items = this.basketProducts.map(item => item.id)
     }
 
     //добавление карточки в корзину
     selectedProduct(data: BasketCard): void {
-        if (!this.basketProducts.some(item => item.id === data.id)) {
-            this.basketProducts.push(data);
-            this.updateOrder();
-        }
+        this.basketProducts.push(data);
     }
 
-    totalPrice() {
-        return this.basketProducts.reduce((sum, item) => sum + (item.price || 0), 0);
-    }
-
-
-    updateOrder(): void {
-        this.order.total = this.totalPrice();
-        this.order.items = this.basketProducts.map(item => item.id);
+    getTotalPrice() {
+        let total = 0;
+        this.basketProducts.forEach(product => {
+            total = total + product.price;
+        })
+        return total;
     }
 }

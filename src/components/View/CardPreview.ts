@@ -23,4 +23,8 @@ export class CardPreview extends CardCatalog  {
     set description(value: string) {
         this._description.textContent = value;
     }
+
+    set button(value: string) {
+        this.setText(this._button, value)
+    }
 }

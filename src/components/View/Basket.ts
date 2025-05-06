@@ -75,8 +75,4 @@ export class Basket extends Component<IBasketView> {
             }
         })
     }
-
-    getContainer(): HTMLElement {
-        return this.container;
-    }
 }

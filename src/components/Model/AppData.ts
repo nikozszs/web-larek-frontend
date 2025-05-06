@@ -1,4 +1,4 @@
-import { IAppState, ProductsCatalog, IOrder, PreviewCard, FormErrors } from "../../types";
+import { IAppState, ProductsCatalog, IOrder, PreviewCard, FormErrors, IOrderForm } from "../../types";
 import _ from "lodash";
 import { Model } from "../base/Model";
 
@@ -45,8 +45,19 @@ export class FormsModel extends Model<IOrder> {
         phone: '',
         address: '',
         payment: '',
-        items: []
+        items: [],
     }
+
+    setOrderField(field: keyof IOrderForm, value: string) {
+        this.order[field] = value;
+    
+        if (this.validateContacts()) {
+          this.events.emit('contacts:ready', this.order)
+        }
+        if (this.validateOrder()) {
+          this.events.emit('order:ready', this.order);
+        }
+      }
 
     setContacts(field: string, value: string): void {
         if (field === 'email') {

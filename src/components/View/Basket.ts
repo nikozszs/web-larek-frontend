@@ -4,27 +4,24 @@ import { EventEmitter } from "../base/events";
 
 interface IBasketView {
     items: HTMLElement[];
-    total: number;
     selected: string[];
-    deletebutton: HTMLElement;
-    submitbutton: HTMLElement;
+    total: number;
 }
 
 export class Basket extends Component<IBasketView> {
-    protected _list: HTMLElement;
+    protected list: HTMLElement;
     protected _total: HTMLElement;
-    protected _submitbutton: HTMLElement;
-    protected _basketTemplate: HTMLElement;
+    protected submitbutton: HTMLElement;
     protected _items: HTMLElement[] = [];
 
     constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
-        this._list = ensureElement<HTMLElement>('.basket__list', this.container);
-        this._total = this.container.querySelector('.basket__price');
-        this._submitbutton = this.container.querySelector('.button');
+        this.list = ensureElement<HTMLElement>('.basket__list', container);
+        this._total = ensureElement<HTMLElement>('.basket__price', container);
+        this.submitbutton = ensureElement<HTMLElement>('.button', container);
 
-        if (this._submitbutton) {
-            this._submitbutton.addEventListener('click', () => {
+        if (this.submitbutton) {
+            this.submitbutton.addEventListener('click', () => {
                 events.emit('order:open');
             });
         }
@@ -39,28 +36,47 @@ export class Basket extends Component<IBasketView> {
     set items(items: HTMLElement[]) {
         this._items = [...items]
         if (items.length) {
-            this._list.replaceChildren(...items);
+            this.list.replaceChildren(...items);
         } else {
-            this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
+            this.list.replaceChildren(createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
             }));
         }
     }
 
-    set selected(items: string[]) {
+    setSelected(items: string[]) {
         if (items.length) {
-            this.setDisabled(this._submitbutton, false);
+            this.setDisabled(this.submitbutton, false);
         } else {
-            this.setDisabled(this._submitbutton, true);
+            this.setDisabled(this.submitbutton, true);
         }
     }
 
-    setTotal(total: number): void {
-        this.setText(this._total, formatNumber(total));
+    updateSubmitButton() {
+        this.setDisabled(this.submitbutton, this._items.length === 0);
+    }
+
+
+    setTotal(value: number | null) {
+        const formattedValue = value === null ? 'Бесценно' : `${formatNumber(value)} синапсов`;
+        this.setText(this._total, formattedValue);
     }
 
     clear(): void {
         this.items = [];
         this.setTotal(0);
+    }
+
+    updateIndex(){
+        this._items.forEach((item, index) => {
+            const indexBasket = item.querySelector('.basket__item-index');
+            if (indexBasket) {
+                indexBasket.textContent = (index + 1).toString();
+            }
+        })
+    }
+
+    getContainer(): HTMLElement {
+        return this.container;
     }
 }

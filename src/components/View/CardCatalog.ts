@@ -8,12 +8,12 @@ export class CardCatalog extends CardBase<IProduct> {
 
     constructor(container: HTMLElement, actions?: IActions) {
             super(container, actions)
-            console.log(container)
             this._image = ensureElement<HTMLImageElement>('.card__image', container);
             this._category = ensureElement<HTMLElement>('.card__category', container);
 
             if (actions?.onClick) {
-                container.style.cursor = 'pointer';
+                container.addEventListener('click', actions.onClick);
+            } else {
                 container.addEventListener('click', actions.onClick);
             }
         }

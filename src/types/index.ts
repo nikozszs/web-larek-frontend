@@ -28,7 +28,7 @@ export interface IAppState {
     catalog: ProductsCatalog[];
     order: IOrder;
     errors: FormErrors;
-    preview: string | null;
+    preview: string;
     loading: boolean;
     setPreview(item: PreviewCard): void;
 }

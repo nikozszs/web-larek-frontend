@@ -2,7 +2,7 @@ import { IActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { CardCatalog } from "./CardCatalog";
 
-export class CardPreview extends CardCatalog {
+export class CardPreview extends CardCatalog  {
     protected _description: HTMLElement;
     protected _button: HTMLButtonElement;
 
@@ -12,24 +12,15 @@ export class CardPreview extends CardCatalog {
         this._description = ensureElement<HTMLElement>('.card__text', container);
         this._button = ensureElement<HTMLButtonElement>('.button', container);
 
-        if (actions?.onClick){
-            if (this._button){
-                this._button.addEventListener('click', actions.onClick)
-            } else {
-                container.addEventListener('click', actions.onClick);
+        this._button.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            if (actions?.onClick) {
+                actions.onClick(evt);
             }
-        }
+        });
     }
 
-    set description(value: string | string[]) {
-        if (Array.isArray(value)) {
-            this._description.replaceWith(...value.map(str => {
-                const descTemplate = this._description.cloneNode() as HTMLElement;
-                this.setText(descTemplate, str);
-                return descTemplate;
-            }));
-        } else {
-            this.setText(this._description, value);
-        }
+    set description(value: string) {
+        this._description.textContent = value;
     }
 }

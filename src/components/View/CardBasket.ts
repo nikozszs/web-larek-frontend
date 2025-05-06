@@ -11,20 +11,14 @@ export class CardBasket extends CardBase<IProduct> {
         this._index = ensureElement<HTMLElement>('.basket__item-index', container);
         this._deletebutton = ensureElement<HTMLButtonElement>('.basket__item-delete', container);
 
-        if (!this._deletebutton) {
+        if (this._deletebutton) {
             this._deletebutton.addEventListener('click', (evt) => {
-                actions?.onClick(evt)
+                this.container.remove();
+                actions?.onClick(evt);
         })}
     }
 
     set index(value: number) {
         this.setText(this._index, value.toString());
     }
-
-    protected setPrice(value: number | null) {
-        if (value === null) {
-          return 'Бесценно'
-        }
-        return String(value) + ' синапсов'
-      }
 }

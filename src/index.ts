@@ -10,7 +10,7 @@ import { CardBasket} from './components/View/CardBasket';
 import { CardCatalog} from './components/View/CardCatalog';
 import { CardPreview} from './components/View/CardPreview';
 import { CatalogChangeEvent, FormsModel, ProductsModel } from './components/Model/AppData';
-import { IProduct, IAppState, ProductsCatalog } from './types';
+import { IProduct, IAppState, ProductsCatalog, PreviewCard, BasketCard } from './types';
 import { FormContacts } from './components/View/FormContacts';
 import { BasketData } from './components/Model/BasketData';
 import { FormOrder } from './components/View/FormOrder';
@@ -43,17 +43,25 @@ const formsModel = new FormsModel({}, events);
 const api = new ShopAPI(CDN_URL, API_URL);
 const basketModel = new BasketData();
 
-const cardPreview = new CardPreview(cloneTemplate(templates.cardPreview));
+
 const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket));
 const basket = new Basket(cloneTemplate(templates.basket), events);
 const formContacts = new FormContacts(cloneTemplate(templates.contacts), events);
 const formOrder = new FormOrder(cloneTemplate(templates.order), events);
+const success = new Success(cloneTemplate(templates.success), {
+    onClick: () => {
+        events.emit('modal:close')
+        modal.close()
+    }
+})
 
-// Изменились элементы каталога
+//вывод карточек каталога на главный экран
 events.on<CatalogChangeEvent>('products:changed', () => {
     page.catalog = productsModel.catalog.map(item => {
-        const cardPreview = new CardCatalog(cloneTemplate(templates.cardCatalog));
-        return cardPreview.render({
+        const cardCatalog = new CardCatalog(cloneTemplate(templates.cardCatalog), {
+            onClick: () => events.emit('card:select', item)
+        });
+        return cardCatalog.render({
             title: item.title,
             image: item.image,
             category: item.category,
@@ -63,6 +71,77 @@ events.on<CatalogChangeEvent>('products:changed', () => {
     });
 });
 
+// Открыть товар
+events.on('card:select', (item: PreviewCard) => {
+        const preview = new CardPreview(cloneTemplate(templates.cardPreview), {
+            onClick: () => {
+                events.emit('card:addBasket', item)
+                modal.close();
+            },
+        });
+        modal.render({
+            content: preview.render({
+                title: item.title,
+                image: item.image,
+                category: item.category,
+                id: item.id,
+                price: item.price,
+                description: item.description,
+            })
+        })
+    });
+
+events.on('basket:changed', () => {
+    page.counter = basketModel.getCounter();
+    basket.items = basketModel.basketProducts.map((item, index) => {
+        const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket), {
+            onClick: () => events.emit('basket:delete', item)
+        });
+        return cardBasket.render({
+            title: item.title,
+            index: index + 1,
+            id: item.id,
+            price: item.price,
+        });
+    });
+
+    basket.setTotal(basketModel.totalPrice());
+    basket.setSelected(basketModel.basketProducts.map(item => item.id));
+});
+
+
+// Добавляем карточку товара в корзину
+events.on('card:addBasket', (item: BasketCard) => {
+    if (!basketModel.basketProducts.some(item => item.id === item.id)) {
+        basketModel.selectedProduct(item as CardBasket);
+        events.emit('basket:changed')
+    }
+})
+
+// удаляем карточку товара из корзины
+events.on('basket:delete', (item: IProduct) => {
+    basketModel.deleteProduct(item.id);
+    events.emit('basket:changed');
+})
+
+// открываем корзину на главном экране
+events.on('basketModal:open', () => {
+    events.emit('basket:chanhed');
+    modal.render({
+        content: basket.getContainer()
+    })
+})
+
+
+// Блокируем прокрутку страницы если открыта модалка
+events.on('modal:open', () => {
+    page.locked = true;
+});
+
+// ... и разблокируем
+events.on('modal:close', () => {
+    page.locked = false;
+});
 
 // Получаем товары с сервера
 api.getProducts()

@@ -13,8 +13,6 @@ export class CardCatalog extends CardBase<IProduct> {
 
             if (actions?.onClick) {
                 container.addEventListener('click', actions.onClick);
-            } else {
-                container.addEventListener('click', actions.onClick);
             }
         }
 

@@ -8,7 +8,7 @@ export class CardPreview extends CardCatalog  {
 
     constructor(container: HTMLElement, actions?: IActions){
         super(container, actions);
-        console.log(container)
+        // console.log(container)
         this._description = ensureElement<HTMLElement>('.card__text', container);
         this._button = ensureElement<HTMLButtonElement>('.button', container);
 

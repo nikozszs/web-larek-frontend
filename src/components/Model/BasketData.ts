@@ -1,16 +1,16 @@
-import { BasketCard, FormErrors, IOrder } from "../../types";
+import { filter } from "lodash";
+import { BasketCard, FormErrors, IOrder, IProduct } from "../../types";
 import { Model } from "../base/Model";
 
 export interface IBasketData extends IOrder{
     clearBasket(): void;
     getCounter: () => number;
-    basketProducts: BasketCard[];
     deleteProduct(value: BasketCard): void;
     selectedProduct(data: BasketCard): void;
     formErrors: FormErrors;
     order: IOrder;
-    total: number;
-    items: string[];
+    total: number | null;
+    items: BasketCard[];
 }
 
 export class BasketData extends Model<IBasketData>{
@@ -21,7 +21,7 @@ export class BasketData extends Model<IBasketData>{
             payment: '',
             items:[]
     }
-    total: number;
+    total: number | null = 0;
     items: BasketCard[] =[];
     formErrors: FormErrors = {};
     email: string;
@@ -30,8 +30,38 @@ export class BasketData extends Model<IBasketData>{
     payment: string;
     price: number;
 
-    clearBasket(){
+    clearBasket() {
         this.items = [];
+        this.total = null;
+    }
+
+    cardBasketToggle(item: IProduct) {
+        return !this.items.some((item) => item.id === item.id) ? this.addCardBasket(item) : this.deleteCardBasket(item);
+    }
+
+    addCardBasket(item: IProduct) {
+        this.items = [... this.items, item];
+        this.emitChanges('basket:changed');
+    }
+
+    deleteCardBasket(item: BasketCard){
+        const index = this.items.indexOf(item);
+        if (index >= 0) {
+            this.items.splice(index,1);
+        }
+        this.items = this.items.filter((item) => item.id !== item.id);
+        this.emitChanges('basket:changed');
+    }
+
+    getButton(item: IProduct) {
+        if (item.price === null) {
+            return 'бесценно';
+        }
+        if (!this.items.some((item) => item.id == item.id)) {
+            return 'В корзину';
+        } else {
+            return 'Убрать из корзины';
+        }
     }
 
     getCounter() {
@@ -42,28 +72,15 @@ export class BasketData extends Model<IBasketData>{
         this.items = data;
     }
 
-    get products() {
+    getProductsOrder(): BasketCard[] {
         return this.items;
     }
 
-    deleteProduct(value: BasketCard): void {
-        const index = this.items.indexOf(value);
-        if (index >= 0) {
-            this.items.splice(index,1);
-        }
-    }
-
-    //добавление карточки в корзину
-    selectedProduct(data: BasketCard): void {
-        this.items.push(data);
-    }
-
     getTotalPrice() {
-        let total = 0;
-        this.items.forEach(product => {
-            total = total + product.price;
-        })
-        return total;
+        const hasNullPrices = this.items.some(item => item.price === null);
+        if (hasNullPrices) return null;
+        
+        return this.items.reduce((sum, product) => sum + (product.price || 0), 0);
     }
 
     setContacts(field: string, value: string): void {

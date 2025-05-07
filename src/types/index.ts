@@ -10,10 +10,11 @@ export type ProductsCatalog = Pick<IProduct, 'id' | 'image' | 'price' | 'title' 
 
 export type PreviewCard = Pick<IProduct, 'id' | 'image' | 'price' | 'description'| 'title' | 'category'>;
 
-export type BasketCard = Pick<IProduct, 'id' | 'price' | 'title' | 'index'>;
+export type BasketCard = Pick<IProduct, 'id' | 'price' | 'title' | 'index' | 'total'>;
 
 
 export interface IProduct {
+    total: number;
     id: string,
     title: string,
     price: number | null,
@@ -21,7 +22,7 @@ export interface IProduct {
     category: CategoryStatus,
     description: string,
     index: number;
-    count: number;
+    button: string;
 }
 
 export interface IAppState {
@@ -57,7 +58,7 @@ export interface IOrderForm {
 
 export interface IOrder extends IOrderForm {
     total?: number;
-    items: string[];
+    items: BasketCard[];
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

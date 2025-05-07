@@ -8,7 +8,6 @@ export type CatalogChangeEvent = {
 
 export class ProductsModel extends Model<IAppState> {
     catalog: ProductsCatalog[];
-    loading: boolean;
     preview: PreviewCard;
 
     getCatalog(): ProductsCatalog[] {
@@ -26,6 +25,6 @@ export class ProductsModel extends Model<IAppState> {
 
     setPreview(item: PreviewCard) {
         this.preview = item;
-        this.emitChanges('card:select', item)
+        this.emitChanges('preview:changed', item)
     }
 }

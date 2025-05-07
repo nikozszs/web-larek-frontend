@@ -66,13 +66,4 @@ export class Basket extends Component<IBasketView> {
         this.items = [];
         this.setTotal(0);
     }
-
-    updateIndex(){
-        this._items.forEach((item, index) => {
-            const indexBasket = item.querySelector('.basket__item-index');
-            if (indexBasket) {
-                indexBasket.textContent = (index + 1).toString();
-            }
-        })
-    }
 }

@@ -4,28 +4,30 @@ import { EventEmitter } from "../base/events";
 
 interface IBasketView {
     items: HTMLElement[];
-    selected: string[];
+
     total: number;
 }
 
 export class Basket extends Component<IBasketView> {
     protected list: HTMLElement;
     protected _total: HTMLElement;
-    protected submitbutton: HTMLElement;
+    submitbutton: HTMLButtonElement;
     protected _items: HTMLElement[] = [];
 
     constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
         this.list = ensureElement<HTMLElement>('.basket__list', container);
         this._total = ensureElement<HTMLElement>('.basket__price', container);
-        this.submitbutton = ensureElement<HTMLElement>('.button', container);
+        this.submitbutton = ensureElement<HTMLButtonElement>('.basket__button', container);
 
         if (this.submitbutton) {
             this.submitbutton.addEventListener('click', () => {
-                events.emit('order:open');
+                if (!this.submitbutton.disabled) {
+                    events.emit('order:open')
+                }
             });
         }
-
+        
         this.items = [];
     }
 
@@ -42,20 +44,20 @@ export class Basket extends Component<IBasketView> {
                 textContent: 'Корзина пуста'
             }));
         }
+        this.updateHandleSubmit();
     }
 
-    setSelected(items: string[]) {
-        if (items.length) {
-            this.setDisabled(this.submitbutton, false);
-        } else {
+    handleSubmit(): void {
+        if (this._items.length > 0) {
+            this.events.emit('order:open');
             this.setDisabled(this.submitbutton, true);
         }
     }
 
-    updateSubmitButton() {
-        this.setDisabled(this.submitbutton, this._items.length === 0);
+    updateHandleSubmit(): void {
+        const itemsInBasket = this._items.length > 0;
+        this.setDisabled(this.submitbutton, !itemsInBasket);
     }
-
 
     setTotal(value: number | null) {
         const formattedValue = value === null ? 'Бесценно' : `${formatNumber(value)} синапсов`;

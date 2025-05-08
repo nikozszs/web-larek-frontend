@@ -1,4 +1,3 @@
-import { filter } from "lodash";
 import { BasketCard, FormErrors, IOrder, IProduct } from "../../types";
 import { Model } from "../base/Model";
 
@@ -35,33 +34,33 @@ export class BasketData extends Model<IBasketData>{
         this.total = null;
     }
 
-    cardBasketToggle(item: IProduct) {
-        return !this.items.some((item) => item.id === item.id) ? this.addCardBasket(item) : this.deleteCardBasket(item);
-    }
-
     addCardBasket(item: IProduct) {
-        this.items = [... this.items, item];
+        const index = this.items.indexOf(item);
+        if (index >= 0) {
+            this.items.splice(index, 1);
+        } else {
+            this.items.push({...item, index: 0 });
+        }
+        this.updateIndex();
         this.emitChanges('basket:changed');
     }
 
-    deleteCardBasket(item: BasketCard){
-        const index = this.items.indexOf(item);
-        if (index >= 0) {
-            this.items.splice(index,1);
-        }
-        this.items = this.items.filter((item) => item.id !== item.id);
+    updateIndex(){
+        this.items.forEach((item, index) => {
+            item.index = index + 1;
+        })
+    }
+
+    deleteCardBasket(items: BasketCard) {
+        this.items = this.items.filter((item) => item.id !== items.id);
+        this.updateIndex();
         this.emitChanges('basket:changed');
     }
 
     getButton(item: IProduct) {
-        if (item.price === null) {
-            return 'бесценно';
-        }
-        if (!this.items.some((item) => item.id == item.id)) {
-            return 'В корзину';
-        } else {
-            return 'Убрать из корзины';
-        }
+        if (item.price === null) return 'бесценно';
+        const itemBasket = this.items.some(itemBasket => itemBasket.id === item.id);
+        return itemBasket ? 'Убрать из корзины' : 'В корзину';
     }
 
     getCounter() {
@@ -127,5 +126,9 @@ export class BasketData extends Model<IBasketData>{
             this.phone.trim() !== '' &&
             this.email.trim() !== ''
         );
+    }
+
+    validateBasket(): boolean {
+        return this.items.length > 0;
     }
 }

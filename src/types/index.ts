@@ -3,6 +3,7 @@ export type CategoryStatus = 'софт-скил' | 'другое' | 'допол�
 export interface IActions {
     onClick?: (event: MouseEvent) => void;
     onSubmit?: (price: number) => void;
+    onDelete?: (event: MouseEvent) => void
 }
 
 

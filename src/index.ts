@@ -1,4 +1,4 @@
-import { EventEmitter, IEvents } from './components/base/events';
+import { EventEmitter } from './components/base/events';
 import { Modal } from './components/View/Modal';
 import { Basket } from './components/View/Basket';
 import { Page } from './components/View/Page';
@@ -10,7 +10,7 @@ import { CardBasket} from './components/View/CardBasket';
 import { CardCatalog} from './components/View/CardCatalog';
 import { CardPreview} from './components/View/CardPreview';
 import { CatalogChangeEvent, ProductsModel } from './components/Model/AppData';
-import { IProduct, IAppState, ProductsCatalog, PreviewCard, IOrderForm, BasketCard } from './types';
+import { IProduct } from './types';
 import { FormContacts } from './components/View/FormContacts';
 import { BasketData } from './components/Model/BasketData';
 import { FormOrder } from './components/View/FormOrder';
@@ -21,6 +21,11 @@ const events = new EventEmitter();
 events.onAll(({ eventName, data }) => {
     console.log(eventName, data);
 })
+// events.onAll(({ eventName, data }) => {
+//     if (eventName === 'basket:changed') {
+//         console.log(basketModel.getProductsOrder());
+//     }
+// });
 
 //шаблоны
 const templates = {
@@ -41,9 +46,6 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const productsModel = new ProductsModel({}, events);
 const api = new ShopAPI(CDN_URL, API_URL);
 const basketModel = new BasketData({}, events);
-
-const cardPreview = new CardPreview(cloneTemplate(templates.cardPreview));
-const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket));
 const basket = new Basket(cloneTemplate(templates.basket), events);
 const contacts = new FormContacts(cloneTemplate(templates.contacts), events);
 const order = new FormOrder(cloneTemplate(templates.order), events);
@@ -87,17 +89,17 @@ events.on('basket:changed', () => {
     page.counter = basketModel.getCounter();
     basket.items = basketModel.getProductsOrder().map(item => {
         const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket), {
-            onClick: () => 
-                events.emit('preview:changed', item)
+            onClick: () => events.emit('preview:changed', item),
+            onDelete: () => events.emit('card:deleteBasket', item)
         });
         return cardBasket.render({
             title: item.title,
-            index: item.index + 1,
+            index: item.index,
             id: item.id,
             price: item.price,
         });
     });
-    basket.setSelected(basketModel.order.items.map(item => item.id));
+
     modal.render({
         content: basket.render()
     });
@@ -110,11 +112,12 @@ events.on('card:select', (item: IProduct) => {
 
 // изменить карточку превью
 events.on('preview:changed', (item: IProduct) => {
-    const cardPreview = new CardPreview(cloneTemplate(templates.cardPreview), {
-        onClick: () => {
-            events.emit('card:addBasket', item);
-            modal.close();
-        },
+    const showItem = (item: IProduct) => {
+        const cardPreview = new CardPreview(cloneTemplate(templates.cardPreview), {
+            onClick: () => {
+                events.emit('card:addBasket', item);
+                modal.close();
+            }
     });
     modal.render({
         content: cardPreview.render({
@@ -124,18 +127,37 @@ events.on('preview:changed', (item: IProduct) => {
             id: item.id,
             price: item.price,
             description: item.description,
-            button: basketModel.getButton(item)
         }),
     });
+    }
+    if (item) {
+        api.getProduct(item.id)
+        .then((result) => {
+            item.description = result.description;
+            showItem(item);
+        })
+        .catch((err) => {
+            console.error(err);
+        })
+    } else {
+        modal.close();
+    }
 });
 
 // добавить карточку в коризну
 events.on('card:addBasket', (item: IProduct) => {
-    basketModel.cardBasketToggle(item);
-    events.emit('basket:changed');
+    basketModel.addCardBasket(item);
+    events.emit('basket:changed')
 })
 
+// удалить карточку из корзины
+events.on('card:deleteBasket', (item: IProduct) => {
+    basketModel.deleteCardBasket(item);
+    events.emit('basket:changed')
+})
 
+// окно с адресом и оплатой 
+// events.on('order:open')
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {

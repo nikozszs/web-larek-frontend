@@ -1,4 +1,4 @@
-import { IAppState, ProductsCatalog, IOrder, PreviewCard, FormErrors, IOrderForm } from "../../types";
+import { IAppState, ProductsCatalog, PreviewCard } from "../../types";
 import _ from "lodash";
 import { Model } from "../base/Model";
 

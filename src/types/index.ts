@@ -6,7 +6,6 @@ export interface IActions {
     onDelete?: (event: MouseEvent) => void
 }
 
-
 export type ProductsCatalog = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'category'>;
 
 export type PreviewCard = Pick<IProduct, 'id' | 'image' | 'price' | 'description'| 'title' | 'category'>;
@@ -31,23 +30,7 @@ export interface IAppState {
     order: IOrder;
     errors: FormErrors;
     preview: string;
-    loading: boolean;
     setPreview(item: PreviewCard): void;
-}
-
-export interface IUserData {
-    address: string;
-    email: string;
-    phone: string;
-    payment: string;
-    total: number;
-    getInfo(): string;
-    setInfo(userData: IUserData): void;
-    setAddress(field: string, value: string): void;
-    validateContacts(): boolean;
-    validateOrder(): boolean;
-    setContacts(field: string, value: string): void;
-    getOrder(): object;
 }
 
 export interface IOrderForm {

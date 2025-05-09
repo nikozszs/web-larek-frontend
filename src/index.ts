@@ -157,7 +157,38 @@ events.on('card:deleteBasket', (item: IProduct) => {
 })
 
 // окно с адресом и оплатой 
-// events.on('order:open')
+events.on('order:open', () => {
+    modal.render({
+        content: order.render({
+            phone: '',
+            email: '',
+            payment: '',
+            address: '',
+            valid: false,
+            errors: []
+        })
+    })
+})
+
+//окно успеха
+events.on('order:submit', () => {
+    api.orderProducts(basketModel.order)
+        .then((result) => {
+            const success = new Success(cloneTemplate(templates.success), {
+                onClick: () => {
+                    modal.close();
+                    basketModel.clearBasket();
+                    events.emit('basket:changed')
+                }
+            });
+            modal.render({
+                content: success.render({})
+            });
+        })
+        .catch(err => {
+            console.error(err);
+        });
+});
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {

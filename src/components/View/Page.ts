@@ -1,8 +1,6 @@
-import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/component";
 import { IEvents } from "../base/events";
-import { CardCatalog } from "./CardCatalog";
 
 interface IPage {
     counter: number;
@@ -16,15 +14,12 @@ export class Page extends Component<IPage> {
     protected _wrapper: HTMLElement;
     protected _basket: HTMLElement;
 
-
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
-
         this._counter = ensureElement<HTMLElement>('.header__basket-counter');
         this._catalog = ensureElement<HTMLElement>('.catalog__items');
         this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
         this._basket = ensureElement<HTMLElement>('.header__basket');
-
         this._basket.addEventListener('click', () => {
             this.events.emit('basketModal:open'); 
         });

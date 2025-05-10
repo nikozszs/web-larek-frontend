@@ -1,4 +1,4 @@
-import { BasketCard, FormErrors, IOrder, IProduct } from "../../types";
+import { BasketCard, FormErrors, IOrder, IOrderForm, IProduct } from "../../types";
 import { Model } from "../base/Model";
 
 export interface IBasketData extends IOrder{
@@ -21,7 +21,7 @@ export class BasketData extends Model<IBasketData>{
             items:[]
     }
     total: number | null = 0;
-    items: BasketCard[] =[];
+    items: BasketCard[] = [];
     formErrors: FormErrors = {};
     email: string;
     phone: string;
@@ -57,6 +57,7 @@ export class BasketData extends Model<IBasketData>{
         this.emitChanges('basket:changed');
     }
 
+
     getButton(item: IProduct) {
         if (item.price === null) return 'бесценно';
         const itemBasket = this.items.some(itemBasket => itemBasket.id === item.id);
@@ -82,28 +83,6 @@ export class BasketData extends Model<IBasketData>{
         return this.items.reduce((sum, product) => sum + (product.price || 0), 0);
     }
 
-    setContacts(field: string, value: string): void {
-        if (field === 'email') {
-            this.email = value;
-        } else if (field === 'phone'){
-            this.phone = value;
-        }
-
-        if (this.validateContacts()){
-            this.emitChanges('order:submit', this.getOrder());
-        }
-    }
-
-    setAddress(field: string, value: string): void {
-        if (field === 'address'){
-            this.address = value;
-        }
-
-        if(this.validateOrder()){
-            this.emitChanges('order:submit', this.getOrder())
-        }
-    }
-
     getOrder() {
         return {
             payment: this.payment,
@@ -115,17 +94,46 @@ export class BasketData extends Model<IBasketData>{
         }
     }
 
-    validateContacts(): boolean {
-        return this.email.trim() !== '' && this.phone.trim() !== '';
+    setOrderField(field: keyof IOrderForm, value: string){
+        this.order[field] = value;
+        this.validateOrder();
     }
 
-    validateOrder(): boolean {
-        return (
-            this.address.trim() !== '' &&
-            this.payment.trim() !== '' &&
-            this.phone.trim() !== '' &&
-            this.email.trim() !== ''
-        );
+    setOrderEmail(value: string){
+        this.order.email = value;
+    }
+
+    setOrderPhone(value: string){
+        this.order.phone = value;
+    }
+
+    setOrderAddress(value: string){
+        this.order.address = value;
+    }
+
+    setOrderPayment(value: string){
+        this.order.payment = value
+    }
+
+    validateOrder() {
+        const errors: typeof this.formErrors = {};
+
+        if(!this.order.email){
+            errors.email = 'Необходимо указать почту'
+        }
+        if(!this.order.address){
+            errors.address = 'Необходимо указать адрес'
+        }
+        if(!this.order.phone){
+            errors.phone = 'Необходимо указать телефон'
+        }
+        if(!this.order.payment){
+            errors.payment = 'Необходимо указать способ оплаты'
+        }
+
+        this.formErrors = errors;
+        this.events.emit('formErrors:changed', this.formErrors);
+        return Object.keys(errors). length === 0;
     }
 
     validateBasket(): boolean {

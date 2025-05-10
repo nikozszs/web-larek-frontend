@@ -10,22 +10,19 @@ import { CardBasket} from './components/View/CardBasket';
 import { CardCatalog} from './components/View/CardCatalog';
 import { CardPreview} from './components/View/CardPreview';
 import { CatalogChangeEvent, ProductsModel } from './components/Model/AppData';
-import { IProduct } from './types';
+import { IOrderForm, IProduct } from './types';
 import { FormContacts } from './components/View/FormContacts';
 import { BasketData } from './components/Model/BasketData';
 import { FormOrder } from './components/View/FormOrder';
 import { Success } from './components/View/Success';
+import { add } from 'lodash';
 
 //events
 const events = new EventEmitter();
 events.onAll(({ eventName, data }) => {
     console.log(eventName, data);
 })
-// events.onAll(({ eventName, data }) => {
-//     if (eventName === 'basket:changed') {
-//         console.log(basketModel.getProductsOrder());
-//     }
-// });
+
 
 //шаблоны
 const templates = {
@@ -56,7 +53,6 @@ api.getProducts()
     .catch(err => {
         console.error(err);
 });
-
 
 // Вывод карточек каталога на главный экран
 events.on<CatalogChangeEvent>('products:changed', () => {
@@ -150,19 +146,25 @@ events.on('card:addBasket', (item: IProduct) => {
     events.emit('basket:changed')
 })
 
+// Обраюотчик способа оплаты
+events.on('payment:changed', (data: { payment: string }) => {
+    basketModel.setOrderPayment(data.payment)
+})
+
 // удалить карточку из корзины
 events.on('card:deleteBasket', (item: IProduct) => {
     basketModel.deleteCardBasket(item);
     events.emit('basket:changed')
 })
 
-// окно с адресом и оплатой 
+// Окно с адресом и оплатой 
 events.on('order:open', () => {
+    // order.updatePaymentButtons();
+    // if (basketModel.validateOrder()) {
+    //     events.emit('contacts:open')
+    // }
     modal.render({
         content: order.render({
-            phone: '',
-            email: '',
-            payment: '',
             address: '',
             valid: false,
             errors: []
@@ -170,15 +172,58 @@ events.on('order:open', () => {
     })
 })
 
-//окно успеха
-events.on('order:submit', () => {
+// Обработчик отправки формы заказа
+events.on('order:submit', (data: { payment: string; address: string }) => {
+    basketModel.setOrderField('payment', data.payment);
+    basketModel.setOrderField('address', data.address);
+    
+    if (basketModel.validateOrder()) {
+        events.emit('contacts:open');
+    }
+});
+
+//Изменения в заказе
+events.on('order:changed', (data: { payment: string; button:HTMLElement}) => {
+    order.updatePaymentButtons();
+    basketModel.setOrderPayment(data.payment);
+    basketModel.validateOrder();
+})
+
+// Окно с контактами
+events.on('contacts:open', () => {
+    modal.render({
+        content: contacts.render({
+            email: '',
+            phone: '',
+            valid: false,
+            errors: []
+        })
+    })
+})
+
+// обработчик ошибок форм
+events.on('formErrors:changed', (errors: Partial<IOrderForm>) => {
+    const { email, phone, address } = errors;
+    contacts.valid = !email && !phone;
+    contacts.errors = [email, phone].filter(Boolean).join('; ');
+    order.valid = !address;
+    order.errors = address ? address : '';
+})
+
+// изменилось одно из полей
+events.on(/^order\..*:change/, (data: { field: keyof Pick<IOrderForm, 'address' | 'email' | 'phone'>; value: string }) => {
+    basketModel.setOrderField(data.field, data.value);
+});
+
+// Окно успеха
+events.on('contacts:submit', () => {
     api.orderProducts(basketModel.order)
         .then((result) => {
             const success = new Success(cloneTemplate(templates.success), {
                 onClick: () => {
-                    modal.close();
                     basketModel.clearBasket();
                     events.emit('basket:changed')
+                    modal.close();
                 }
             });
             modal.render({

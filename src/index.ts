@@ -203,15 +203,23 @@ events.on('contacts:open', () => {
 
 // обработчик ошибок форм
 events.on('formErrors:changed', (errors: Partial<IOrderForm>) => {
-    const { email, phone, address } = errors;
-    contacts.valid = !email && !phone;
-    contacts.errors = [email, phone].filter(Boolean).join('; ');
-    order.valid = !address;
-    order.errors = address ? address : '';
+    const formOrder = {
+        address: errors.address,
+        payment: errors.payment
+    };
+    order.errors = Object.values(formOrder).filter(Boolean).join('; ');
+    order.valid = !errors.address && !errors.payment;
+
+    const formContacts = {
+        email: errors.email,
+        phone: errors.phone
+    };
+    contacts.errors = Object.values(formContacts).filter(Boolean).join('; ');
+    contacts.valid = !errors.email && !errors.phone;
 })
 
 // изменилось одно из полей
-events.on(/^order\..*:change/, (data: { field: keyof Pick<IOrderForm, 'address' | 'email' | 'phone'>; value: string }) => {
+events.on(/^order\..*:changed/, (data: { field: keyof Pick<IOrderForm, 'address' | 'email' | 'phone'>; value: string }) => {
     basketModel.setOrderField(data.field, data.value);
 });
 

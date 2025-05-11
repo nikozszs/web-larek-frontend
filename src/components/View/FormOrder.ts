@@ -20,9 +20,6 @@ export class FormOrder extends Form<IOrderForm> {
         this.submitButton.addEventListener('click', (evt) => {
             evt.preventDefault();
             this.submitOrder();
-            if(this.validateForm()){
-                this.events.emit('contacts:open')
-            }
         })
         if(this.card) {
             this.card.addEventListener('click', () => this.selectPayment('card'));
@@ -30,6 +27,15 @@ export class FormOrder extends Form<IOrderForm> {
         if(this.cash) {
             this.cash.addEventListener('click', () => this.selectPayment('cash'));
         }
+        this.address.addEventListener('input', (e) => {
+            const value = (e.target as HTMLInputElement).value;
+            console.log('Address input value:', value);
+            console.log('Address valid:', value.length >= 2);
+            this.events.emit('order.address:change', {
+                field: 'address',
+                value: value
+            });
+        });
     }
 
     selectPayment(type: 'card' | 'cash'): void {
@@ -48,6 +54,7 @@ export class FormOrder extends Form<IOrderForm> {
                 payment: this.selectedpayment,
                 address: this.address.value
             })
+            this.events.emit('contacts:open');
         }
     }
 
@@ -58,15 +65,19 @@ export class FormOrder extends Form<IOrderForm> {
 
     validateForm(): boolean {
         const errors: Partial<IOrderForm> = {};
+        const addressValue = this.address.value?.trim() || '';
 
-        if(!this.address){
+        if(addressValue.length < 2){
             errors.address = 'Необходимо указать адрес'
         }
 
         if(!this.selectedpayment){
             errors.payment = 'Необходимо указать способ оплаты'
         }
+        
         this.events.emit('formErrors:changed', errors);
+        console.log(this.address.value)
+        console.log(this.selectPayment)
         return Object.keys(errors). length === 0;
     }
 }

@@ -97,6 +97,7 @@ export class BasketData extends Model<IBasketData>{
     setOrderField(field: keyof IOrderForm, value: string){
         this.order[field] = value;
         this.validateOrder();
+        console.log(field, value)
     }
 
     setOrderEmail(value: string){

@@ -19,7 +19,7 @@ export interface IProduct {
     title: string,
     price: number | null,
     image: string,
-    category: CategoryStatus,
+    category: string,
     description: string,
     index: number;
     button: string;
@@ -49,4 +49,5 @@ export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IOrderResult {
     id: string;
+    total: number;
 }

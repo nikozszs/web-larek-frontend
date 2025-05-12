@@ -73,7 +73,7 @@ events.on<CatalogChangeEvent>('products:changed', () => {
 
 // открыть модалку корзины
 events.on('basketModal:open', () => {
-    events.emit('basket:changed');
+    // events.emit('basket:changed');
     modal.render({
         content: basket.render()
     })
@@ -159,10 +159,7 @@ events.on('card:deleteBasket', (item: IProduct) => {
 
 // Окно с адресом и оплатой 
 events.on('order:open', () => {
-    // order.updatePaymentButtons();
-    // if (basketModel.validateOrder()) {
-    //     events.emit('contacts:open')
-    // }
+    basketModel.validateOrder();
     modal.render({
         content: order.render({
             address: '',
@@ -178,8 +175,17 @@ events.on('order:submit', (data: { payment: string; address: string }) => {
     basketModel.setOrderField('address', data.address);
     
     if (basketModel.validateOrder()) {
-        events.emit('contacts:open');
+        events.emit('contacts:submit');
     }
+
+    modal.render({
+        content: contacts.render({
+            email: '',
+            phone: '',
+            valid: false,
+            errors: []
+        })
+    })
 });
 
 //Изменения в заказе
@@ -189,33 +195,17 @@ events.on('order:changed', (data: { payment: string; button:HTMLElement}) => {
     basketModel.validateOrder();
 })
 
-// Окно с контактами
-events.on('contacts:open', () => {
-    modal.render({
-        content: contacts.render({
-            email: '',
-            phone: '',
-            valid: false,
-            errors: []
-        })
-    })
-})
-
 // обработчик ошибок форм
 events.on('formErrors:changed', (errors: Partial<IOrderForm>) => {
-    const formOrder = {
-        address: errors.address,
-        payment: errors.payment
-    };
-    order.errors = Object.values(formOrder).filter(Boolean).join('; ');
-    order.valid = !errors.address && !errors.payment;
+    const { address, phone, email, payment } = errors;
 
-    const formContacts = {
-        email: errors.email,
-        phone: errors.phone
-    };
-    contacts.errors = Object.values(formContacts).filter(Boolean).join('; ');
+    order.valid = !errors.address && !errors.payment;
+    order.errors = Object.values({payment, address}).filter((i) => !!i).join('; ');
     contacts.valid = !errors.email && !errors.phone;
+    contacts.errors = Object.values({email, phone}).filter((i) => !!i).join('; ');
+    // console.log(order)
+    // console.log(order.valid)
+    // console.log(order.errors)
 })
 
 // изменилось одно из полей
@@ -234,8 +224,9 @@ events.on('contacts:submit', () => {
                     modal.close();
                 }
             });
+            basketModel.clearBasket();
             modal.render({
-                content: success.render({})
+                content: success.render({ total: result.total})
             });
         })
         .catch(err => {

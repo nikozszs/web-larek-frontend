@@ -2,10 +2,10 @@ import { BasketCard, FormErrors, IOrder, IOrderForm, IProduct } from "../../type
 import { Model } from "../base/Model";
 
 export interface IBasketData extends IOrder{
-    clearBasket(): void;
-    getCounter: () => number;
-    deleteProduct(value: BasketCard): void;
-    selectedProduct(data: BasketCard): void;
+    // clearBasket(): void;
+    // getCounter: () => number;
+    // deleteProduct(value: BasketCard): void;
+    // selectedProduct(data: BasketCard): void;
     formErrors: FormErrors;
     order: IOrder;
     total: number | null;
@@ -97,7 +97,6 @@ export class BasketData extends Model<IBasketData>{
     setOrderField(field: keyof IOrderForm, value: string){
         this.order[field] = value;
         this.validateOrder();
-        console.log(field, value)
     }
 
     setOrderEmail(value: string){
@@ -119,22 +118,33 @@ export class BasketData extends Model<IBasketData>{
     validateOrder() {
         const errors: typeof this.formErrors = {};
 
-        if(!this.order.email){
-            errors.email = 'Необходимо указать почту'
-        }
         if(!this.order.address){
             errors.address = 'Необходимо указать адрес'
         }
-        if(!this.order.phone){
-            errors.phone = 'Необходимо указать телефон'
-        }
+
         if(!this.order.payment){
             errors.payment = 'Необходимо указать способ оплаты'
         }
 
         this.formErrors = errors;
         this.events.emit('formErrors:changed', this.formErrors);
-        return Object.keys(errors). length === 0;
+        return Object.keys(errors).length === 0;
+    }
+
+    validateContacts() {
+        const errors: typeof this.formErrors = {};
+
+        if(!this.order.email){
+            errors.email = 'Необходимо указать почту'
+        }
+        
+        if(!this.order.phone){
+            errors.phone = 'Необходимо указать телефон'
+        }
+
+        this.formErrors = errors;
+        this.events.emit('formErrors:changed', this.formErrors);
+        return Object.keys(errors).length === 0;
     }
 
     validateBasket(): boolean {

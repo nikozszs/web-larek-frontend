@@ -10,6 +10,8 @@ interface IFormState {
 export class Form<T> extends Component<IFormState> {
     protected _submit: HTMLButtonElement;
     protected _errors: HTMLElement;
+    protected _currentValid: boolean = false;
+    protected _currentErrors: string = '';
 
     constructor(protected container: HTMLFormElement, protected events: IEvents) {
         super(container);
@@ -38,11 +40,21 @@ export class Form<T> extends Component<IFormState> {
     }
 
     set valid(value: boolean) {
+        this._currentValid = value;
         this._submit.disabled = !value;
     }
 
+    get valid():boolean {
+        return this._currentValid;
+    }
+
     set errors(value: string) {
+        this._currentErrors = value;
         this.setText(this._errors, value);
+    }
+
+    get errors(): string {
+        return this._currentErrors;
     }
 
     reset() {

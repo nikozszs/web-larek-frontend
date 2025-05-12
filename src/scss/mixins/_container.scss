@@ -1,7 +1,7 @@
 @use "variables" as *;
 
 @mixin container($top: $defaultPadding, $bottom: $defaultPadding) {
-  margin: auto;
+  margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
   max-width: $maxPageWidth;
@@ -24,5 +24,5 @@
 @mixin grid($min, $gap) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax($min, 1fr));
-  grid-gap: $gap;
+  gap: $gap;
 }

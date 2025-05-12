@@ -4,7 +4,14 @@ import { CardBase } from "./CardBase";
 
 export class CardCatalog extends CardBase<IProduct> {
     protected _image: HTMLImageElement;
-    protected _category: HTMLElement;
+    protected _category: HTMLSpanElement;
+    protected color: Record<string, string> = {
+        "софт-скил": 'soft',
+         "другое": 'other',
+         "дополнительное": 'additional',
+         "кнопка": 'button',
+         "хард-скил": 'hard', 
+    }
 
     constructor(container: HTMLElement, actions?: IActions) {
             super(container, actions)
@@ -20,7 +27,14 @@ export class CardCatalog extends CardBase<IProduct> {
         this.setImage(this._image, value, this.title)
     }
 
-    set category(value: string) {
-        this.setText(this._category, value);
-    }
+    set category(value: string) { 
+        this.setText(this._category, value); 
+        this._category.className = `card__category card__category_${
+			this.color[value] || 'default'
+		}`;
+     }
+
+    get category() {
+		return this._category.textContent || '';
+	}
 }

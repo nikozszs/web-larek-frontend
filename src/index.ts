@@ -15,7 +15,6 @@ import { FormContacts } from './components/View/FormContacts';
 import { BasketData } from './components/Model/BasketData';
 import { FormOrder } from './components/View/FormOrder';
 import { Success } from './components/View/Success';
-import { add } from 'lodash';
 
 //events
 const events = new EventEmitter();
@@ -148,7 +147,7 @@ events.on('card:addBasket', (item: IProduct) => {
 
 // Обраюотчик способа оплаты
 events.on('payment:changed', (data: { payment: string }) => {
-    basketModel.setOrderPayment(data.payment)
+    basketModel.setOrderField('payment', data.payment)
 })
 
 // удалить карточку из корзины
@@ -159,7 +158,6 @@ events.on('card:deleteBasket', (item: IProduct) => {
 
 // Окно с адресом и оплатой 
 events.on('order:open', () => {
-    basketModel.validateOrder();
     modal.render({
         content: order.render({
             address: '',
@@ -169,19 +167,22 @@ events.on('order:open', () => {
     })
 })
 
-// Обработчик отправки формы заказа
-events.on('order:submit', (data: { payment: string; address: string }) => {
+//Изменения в заказе
+events.on('order:changed', (data: { payment: string; address: string}) => {
+    order.updatePaymentButtons();
     basketModel.setOrderField('payment', data.payment);
     basketModel.setOrderField('address', data.address);
-    
     if (basketModel.validateOrder()) {
-        events.emit('contacts:submit');
+        events.emit('order:submit');
     }
+})
 
+// Окно с имеил и телефоном
+events.on('order:submit', () => {
     modal.render({
         content: contacts.render({
-            email: '',
             phone: '',
+            email: '',
             valid: false,
             errors: []
         })
@@ -189,10 +190,12 @@ events.on('order:submit', (data: { payment: string; address: string }) => {
 });
 
 //Изменения в заказе
-events.on('order:changed', (data: { payment: string; button:HTMLElement}) => {
-    order.updatePaymentButtons();
-    basketModel.setOrderPayment(data.payment);
-    basketModel.validateOrder();
+events.on('contacts:changed', (data: { email: string; phone: string}) => {
+    basketModel.setOrderField('email', data.email);
+    basketModel.setOrderField('phone', data.phone);
+    if (basketModel.validateOrder()) {
+        events.emit('contacts:submit');
+    }
 })
 
 // обработчик ошибок форм
@@ -203,13 +206,15 @@ events.on('formErrors:changed', (errors: Partial<IOrderForm>) => {
     order.errors = Object.values({payment, address}).filter((i) => !!i).join('; ');
     contacts.valid = !errors.email && !errors.phone;
     contacts.errors = Object.values({email, phone}).filter((i) => !!i).join('; ');
-    // console.log(order)
-    // console.log(order.valid)
-    // console.log(order.errors)
 })
 
 // изменилось одно из полей
-events.on(/^order\..*:changed/, (data: { field: keyof Pick<IOrderForm, 'address' | 'email' | 'phone'>; value: string }) => {
+events.on(/^order\..*:changed/, (data: { field: keyof Pick<IOrderForm, 'address'>; value: string }) => {
+    basketModel.setOrderField(data.field, data.value);
+});
+
+// изменилось одно из полей
+events.on(/^contacts\..*:changed/, (data: { field: keyof Pick<IOrderForm, 'email' | 'phone'>; value: string }) => {
     basketModel.setOrderField(data.field, data.value);
 });
 
@@ -224,15 +229,16 @@ events.on('contacts:submit', () => {
                     modal.close();
                 }
             });
-            basketModel.clearBasket();
             modal.render({
-                content: success.render({ total: result.total})
+                content: success.render({ total: result.total })
             });
         })
         .catch(err => {
             console.error(err);
         });
 });
+console.log(api.orderProducts(basketModel.order))
+console.log(basketModel.clearBasket())
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {

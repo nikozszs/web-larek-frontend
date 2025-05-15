@@ -99,22 +99,6 @@ export class BasketData extends Model<IBasketData>{
         this.validateOrder();
     }
 
-    setOrderEmail(value: string){
-        this.order.email = value;
-    }
-
-    setOrderPhone(value: string){
-        this.order.phone = value;
-    }
-
-    setOrderAddress(value: string){
-        this.order.address = value;
-    }
-
-    setOrderPayment(value: string){
-        this.order.payment = value
-    }
-
     validateOrder() {
         const errors: typeof this.formErrors = {};
 
@@ -123,16 +107,8 @@ export class BasketData extends Model<IBasketData>{
         }
 
         if(!this.order.payment){
-            errors.payment = 'Необходимо указать способ оплаты'
+            errors.payment = 'Необходимо выбрать способ оплаты'
         }
-
-        this.formErrors = errors;
-        this.events.emit('formErrors:changed', this.formErrors);
-        return Object.keys(errors).length === 0;
-    }
-
-    validateContacts() {
-        const errors: typeof this.formErrors = {};
 
         if(!this.order.email){
             errors.email = 'Необходимо указать почту'

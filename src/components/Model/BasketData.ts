@@ -32,6 +32,13 @@ export class BasketData extends Model<IBasketData>{
     clearBasket() {
         this.items = [];
         this.total = null;
+        this.emitChanges('basket:changed');
+    }
+
+    updateIndex(){
+        this.items.forEach((item, index) => {
+            item.index = index + 1;
+        })
     }
 
     addCardBasket(item: IProduct) {
@@ -45,18 +52,11 @@ export class BasketData extends Model<IBasketData>{
         this.emitChanges('basket:changed');
     }
 
-    updateIndex(){
-        this.items.forEach((item, index) => {
-            item.index = index + 1;
-        })
-    }
-
-    deleteCardBasket(items: BasketCard) {
-        this.items = this.items.filter((item) => item.id !== items.id);
+    deleteCardBasket(item: BasketCard) {
+        this.items = this.items.filter((card) => card.id !== item.id);
         this.updateIndex();
         this.emitChanges('basket:changed');
     }
-
 
     getButton(item: IProduct) {
         if (item.price === null) return 'бесценно';

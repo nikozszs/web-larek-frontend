@@ -21,6 +21,6 @@ export class CardBasket extends CardBase<IProduct> {
     }
 
     set index(value: number) {
-        this.setText(this._index, value.toString());
+        this.setText(this._index, value);
     }
 }

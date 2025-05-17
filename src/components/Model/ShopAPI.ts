@@ -6,7 +6,6 @@ export interface IShopAPI {
     getProducts: () => Promise<IProduct[]>;
     getProduct: (id: string) => Promise<IProduct>;
     orderProducts: (order: IOrder) => Promise<IOrderResult>;
-    deleteProduct: (id: string) => Promise<IProduct>;
 }
 
 export class ShopAPI extends Api implements IShopAPI {
@@ -39,9 +38,5 @@ export class ShopAPI extends Api implements IShopAPI {
         return this.post('/order', order).then(
             (data: IOrderResult) => data
         );
-    }
-
-    deleteProduct(id: string): Promise<IProduct> {
-        return this.post<IProduct>('/product', {id}, 'DELETE');
     }
 }

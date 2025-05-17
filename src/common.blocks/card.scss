@@ -19,6 +19,10 @@
     }
   }
 
+  @media (max-width: 1000px) {
+    flex-direction: column;
+  }
+
   &_compact {
     flex-direction: row;
     background-color: transparent;

@@ -72,7 +72,6 @@ events.on<CatalogChangeEvent>('products:changed', () => {
 
 // открыть модалку корзины
 events.on('basketModal:open', () => {
-    // events.emit('basket:changed');
     modal.render({
         content: basket.render()
     })
@@ -87,6 +86,7 @@ events.on('basket:changed', () => {
             onClick: () => events.emit('preview:changed', item),
             onDelete: () => events.emit('card:deleteBasket', item)
         });
+
         return cardBasket.render({
             title: item.title,
             index: item.index,
@@ -122,6 +122,7 @@ events.on('preview:changed', (item: IProduct) => {
             id: item.id,
             price: item.price,
             description: item.description,
+            button: basketModel.getButton(item),
         }),
     });
     }
@@ -142,7 +143,6 @@ events.on('preview:changed', (item: IProduct) => {
 // добавить карточку в коризну
 events.on('card:addBasket', (item: IProduct) => {
     basketModel.addCardBasket(item);
-    events.emit('basket:changed')
 })
 
 // Обраюотчик способа оплаты
@@ -224,9 +224,9 @@ events.on('contacts:submit', () => {
         .then((result) => {
             const success = new Success(cloneTemplate(templates.success), {
                 onClick: () => {
-                    basketModel.clearBasket();
-                    events.emit('basket:changed')
                     modal.close();
+                    basketModel.clearBasket();
+                    events.emit('basket:changed');
                 }
             });
             modal.render({
@@ -237,8 +237,6 @@ events.on('contacts:submit', () => {
             console.error(err);
         });
 });
-console.log(api.orderProducts(basketModel.order))
-console.log(basketModel.clearBasket())
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {

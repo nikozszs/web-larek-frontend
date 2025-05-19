@@ -48,8 +48,6 @@ const order = new FormOrder(cloneTemplate(templates.order), events);
 const success = new Success(cloneTemplate(templates.success), {
     onClick: () => {
         modal.close();
-        // basketModel.clearBasket();
-        // events.emit('basket:changed');
     }
 });
 
@@ -233,6 +231,7 @@ events.on('contacts:submit', () => {
                     description: `Списано ${result.total} синапсов`
                 })
             });
+            basketModel.clearBasket();
         })
         .catch(err => {
             console.error(err);

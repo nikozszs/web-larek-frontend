@@ -10,14 +10,7 @@ export class CardBasket extends CardBase<IProduct> {
         super(container, actions);
         this._index = ensureElement<HTMLElement>('.basket__item-index', container);
         this._deletebutton = ensureElement<HTMLButtonElement>('.basket__item-delete', container);
-
-        if (this._deletebutton) {
-            this._deletebutton.addEventListener('click', (evt) => {
-                this.container.remove();
-                if (actions.onDelete) {
-                    actions.onDelete(evt)
-                }
-        })}
+        this._deletebutton.addEventListener('click', (evt) => actions.onDelete?.(evt));
     }
 
     set index(value: number) {

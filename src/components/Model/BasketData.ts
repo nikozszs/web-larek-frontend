@@ -31,34 +31,36 @@ export class BasketData extends Model<IBasketData>{
         this.emitChanges('basket:changed');
     }
 
-    updateIndex(){
-        this.items.forEach((item, index) => {
-            item.index = index + 1;
-        })
-    }
-
     addCardBasket(item: IProduct) {
-        const index = this.items.indexOf(item);
-        if (index >= 0) {
-            this.items.splice(index, 1);
-        } else {
-            this.items.push({...item, index: 0 });
-        }
-        this.updateIndex();
+        this.items = [...this.items, item]
         this.emitChanges('basket:changed');
     }
 
     deleteCardBasket(item: BasketCard) {
         this.items = this.items.filter((card) => card.id !== item.id);
-        this.updateIndex();
         this.emitChanges('basket:changed');
     }
 
-    getButton(item: IProduct) {
+    getButtonStatus(item: IProduct) {
         if (item.price === null) return 'бесценно';
         const itemBasket = this.items.some(itemBasket => itemBasket.id === item.id);
         return itemBasket ? 'Убрать из корзины' : 'В корзину';
     }
+
+    // hasItemInBasket(itemId: string): boolean {
+    //     return this.items.some(item => item.id === itemId);
+    // }
+
+    // toggleItem(product: IProduct): void {
+    //     const existingIndex = this.items.findIndex(item => item.id === product.id);
+        
+    //     if (existingIndex >= 0) {
+    //         this.items.splice(existingIndex, 1);
+    //     } else {
+    //         this.items.push({...product});
+    //     }
+    //     this.emitChanges('basket:changed');
+    // }
 
     getCounter() {
         return this.items.length;

@@ -1,4 +1,4 @@
-import { IActions } from "../../types";
+import { IActions, IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { CardCatalog } from "./CardCatalog";
 
@@ -8,7 +8,6 @@ export class CardPreview extends CardCatalog  {
 
     constructor(container: HTMLElement, actions?: IActions){
         super(container, actions);
-        // console.log(container)
         this._description = ensureElement<HTMLElement>('.card__text', container);
         this._button = ensureElement<HTMLButtonElement>('.button', container);
 

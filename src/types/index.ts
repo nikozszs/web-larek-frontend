@@ -48,6 +48,6 @@ export interface IOrder extends IOrderForm {
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IOrderResult {
-    id: string;
+    // id: string;
     total: number;
 }

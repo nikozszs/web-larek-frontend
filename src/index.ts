@@ -88,22 +88,17 @@ events.on('basketModal:open', () => {
 events.on('basket:changed', () => {
     basket.setTotal(basketModel.getTotalPrice());
     page.counter = basketModel.getCounter();
-    basket.items = basketModel.getProductsOrder().map(item => {
+    basket.items = basketModel.getProductsOrder().map((item, index) => {
         const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket), {
             onClick: () => events.emit('preview:changed', item),
             onDelete: () => events.emit('card:deleteBasket', item)
         });
-
         return cardBasket.render({
             title: item.title,
-            index: item.index,
+            index: index + 1,
             id: item.id,
             price: item.price,
         });
-    });
-
-    modal.render({
-        content: basket.render()
     });
 })
 
@@ -129,7 +124,7 @@ events.on('preview:changed', (item: IProduct) => {
             id: item.id,
             price: item.price,
             description: item.description,
-            button: basketModel.getButton(item),
+            button: basketModel.getButtonStatus(item),
         }),
     });
     }
@@ -160,7 +155,6 @@ events.on('payment:changed', (data: { payment: string }) => {
 // удалить карточку из корзины
 events.on('card:deleteBasket', (item: IProduct) => {
     basketModel.deleteCardBasket(item);
-    events.emit('basket:changed')
 })
 
 // Окно с адресом и оплатой 
@@ -237,8 +231,7 @@ events.on('contacts:submit', () => {
         .then((result) => {
             modal.render({
                 content: success.render({
-                    total: result.total,
-                    description: `Списано ${result.total} синапсов`
+                    descriptionElement: `Списано ${result} синапсов`
                 })
             });
         })

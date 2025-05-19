@@ -2,14 +2,10 @@ import { BasketCard, FormErrors, IOrder, IOrderForm, IProduct } from "../../type
 import { Model } from "../base/Model";
 
 export interface IBasketData extends IOrder{
-    // clearBasket(): void;
-    // getCounter: () => number;
-    // deleteProduct(value: BasketCard): void;
-    // selectedProduct(data: BasketCard): void;
     formErrors: FormErrors;
     order: IOrder;
     total: number | null;
-    items: BasketCard[];
+    items: string[];
 }
 
 export class BasketData extends Model<IBasketData>{
@@ -18,9 +14,9 @@ export class BasketData extends Model<IBasketData>{
             phone: '',
             address: '',
             payment: '',
-            items:[]
+            items:[],
     }
-    total: number | null = 0;
+    total: number | null;
     items: BasketCard[] = [];
     formErrors: FormErrors = {};
     email: string;

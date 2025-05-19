@@ -42,7 +42,7 @@ export interface IOrderForm {
 
 export interface IOrder extends IOrderForm {
     total?: number;
-    items: BasketCard[];
+    items?: string[];
 }
 
 export type FormErrors = Partial<Record<keyof IOrder, string>>;

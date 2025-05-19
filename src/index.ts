@@ -10,7 +10,7 @@ import { CardBasket} from './components/View/CardBasket';
 import { CardCatalog} from './components/View/CardCatalog';
 import { CardPreview} from './components/View/CardPreview';
 import { CatalogChangeEvent, ProductsModel } from './components/Model/AppData';
-import { IOrderForm, IProduct } from './types';
+import { IOrder, IOrderForm, IProduct } from './types';
 import { FormContacts } from './components/View/FormContacts';
 import { BasketData } from './components/Model/BasketData';
 import { FormOrder } from './components/View/FormOrder';
@@ -45,6 +45,13 @@ const basketModel = new BasketData({}, events);
 const basket = new Basket(cloneTemplate(templates.basket), events);
 const contacts = new FormContacts(cloneTemplate(templates.contacts), events);
 const order = new FormOrder(cloneTemplate(templates.order), events);
+const success = new Success(cloneTemplate(templates.success), {
+    onClick: () => {
+        modal.close();
+        basketModel.clearBasket();
+        events.emit('basket:changed');
+    }
+});
 
 // Получаем товары с сервера
 api.getProducts()
@@ -220,17 +227,19 @@ events.on(/^contacts\..*:changed/, (data: { field: keyof Pick<IOrderForm, 'email
 
 // Окно успеха
 events.on('contacts:submit', () => {
-    api.orderProducts(basketModel.order)
+    const orderData: IOrder = {
+        ...basketModel.order,
+        items: basketModel.items.map(item =>
+            item.id),
+        total: basketModel.getTotalPrice()
+    }
+    api.orderProducts(orderData)
         .then((result) => {
-            const success = new Success(cloneTemplate(templates.success), {
-                onClick: () => {
-                    modal.close();
-                    basketModel.clearBasket();
-                    events.emit('basket:changed');
-                }
-            });
             modal.render({
-                content: success.render({ total: result.total })
+                content: success.render({
+                    total: result.total,
+                    description: `Списано ${result.total} синапсов`
+                })
             });
         })
         .catch(err => {

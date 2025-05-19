@@ -9,10 +9,8 @@ export class CardPreview extends CardCatalog  {
     constructor(container: HTMLElement, actions?: IActions){
         super(container, actions);
         this._description = ensureElement<HTMLElement>('.card__text', container);
-        this._button = ensureElement<HTMLButtonElement>('.button', container);
-
+        this._button = ensureElement<HTMLButtonElement>('.card__button', container);
         this._button.addEventListener('click', (evt) => {
-            evt.preventDefault();
             if (actions?.onButtonClick) {
                 actions.onButtonClick(evt);
             }
@@ -25,5 +23,15 @@ export class CardPreview extends CardCatalog  {
 
     set button(value: string) {
         this.setText(this._button, value)
+    }
+
+    updateButtonPreview(isBasket: boolean, isPriceless: boolean) {
+        if (isPriceless) {
+            this._button.textContent = 'Бесценно';
+            this._button.disabled = true;
+        } else {
+            this._button.textContent = isBasket ? 'Убрать из корзины' : "В корзину";
+            this._button.disabled = false;
+        }
     }
 }

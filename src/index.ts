@@ -83,11 +83,12 @@ events.on('basketModal:open', () => {
 
 // изменить корзину
 events.on('basket:changed', () => {
-    basket.setTotal(basketModel.getTotalPrice());
+    basket.setTotal(basketModel.total);
     page.counter = basketModel.getCounter();
     basket.items = basketModel.getProductsOrder().map((item, index) => {
         const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket), {
-            onDelete: () => events.emit('card:deleteBasket', item)
+            // onDelete: () => events.emit('card:deleteBasket', item)
+            onDelete: () => basketModel.deleteCardBasket(item.id)
         });
         return cardBasket.render({
             title: item.title,
@@ -108,7 +109,11 @@ events.on('preview:changed', (item: IProduct) => {
     const showItem = (item: IProduct) => {
         const cardPreview = new CardPreview(cloneTemplate(templates.cardPreview), {
             onClick: () => {
-                events.emit('card:addBasket', item);
+                if (basketModel.hasItem(item.id)) {
+                    basketModel.deleteCardBasket(item.id);
+                } else {
+                    basketModel.addCardBasket(item);
+                }
                 modal.close();
             }
     });
@@ -120,9 +125,13 @@ events.on('preview:changed', (item: IProduct) => {
             id: item.id,
             price: item.price,
             description: item.description,
-            button: basketModel.getButtonStatus(item),
         }),
     });
+    cardPreview.updateButtonPreview(
+        basketModel.hasItem(item.id),
+        basketModel.isPriceless(item)
+    );
+
     }
     if (item) {
         api.getProduct(item.id)
@@ -150,7 +159,7 @@ events.on('payment:changed', (data: { payment: string }) => {
 
 // удалить карточку из корзины
 events.on('card:deleteBasket', (item: IProduct) => {
-    basketModel.deleteCardBasket(item);
+    basketModel.deleteCardBasket(item.id);
 })
 
 // Окно с адресом и оплатой 

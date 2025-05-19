@@ -32,7 +32,7 @@ export class CardCatalog extends CardBase<IProduct> {
         this._category.className = `card__category card__category_${
 			this.color[value] || 'default'
 		}`;
-     }
+    }
 
     get category() {
 		return this._category.textContent || '';

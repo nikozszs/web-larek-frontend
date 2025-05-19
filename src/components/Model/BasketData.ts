@@ -4,7 +4,6 @@ import { Model } from "../base/Model";
 export interface IBasketData extends IOrder{
     formErrors: FormErrors;
     order: IOrder;
-    total: number | null;
     items: string[];
 }
 
@@ -19,48 +18,38 @@ export class BasketData extends Model<IBasketData>{
     total: number | null;
     items: BasketCard[] = [];
     formErrors: FormErrors = {};
-    email: string;
-    phone: string;
-    address: string;
-    payment: string;
-    price: number;
 
     clearBasket() {
         this.items = [];
         this.total = null;
         this.emitChanges('basket:changed');
     }
-
+    
     addCardBasket(item: IProduct) {
-        this.items = [...this.items, item]
+        if (!this.hasItem(item.id)) {
+            this.items = [...this.items, item];
+            this.getTotalPrice();
+            this.emitChanges('basket:changed');
+        }
+    }
+
+    deleteCardBasket(itemId: string) {
+        this.items = this.items.filter((item) => item.id !== itemId);
+        this.getTotalPrice();
         this.emitChanges('basket:changed');
     }
 
-    deleteCardBasket(item: BasketCard) {
-        this.items = this.items.filter((card) => card.id !== item.id);
-        this.emitChanges('basket:changed');
+    hasItem(itemId: string): boolean {
+        return this.items.some(item => item.id === itemId);
     }
 
     getButtonStatus(item: IProduct) {
-        if (item.price === null) return 'бесценно';
-        const itemBasket = this.items.some(itemBasket => itemBasket.id === item.id);
-        return itemBasket ? 'Убрать из корзины' : 'В корзину';
+        if (this.hasItem(item.id)) {
+            this.deleteCardBasket(item.id);
+        } else {
+            this.addCardBasket(item);
+        }
     }
-
-    // hasItemInBasket(itemId: string): boolean {
-    //     return this.items.some(item => item.id === itemId);
-    // }
-
-    // toggleItem(product: IProduct): void {
-    //     const existingIndex = this.items.findIndex(item => item.id === product.id);
-        
-    //     if (existingIndex >= 0) {
-    //         this.items.splice(existingIndex, 1);
-    //     } else {
-    //         this.items.push({...product});
-    //     }
-    //     this.emitChanges('basket:changed');
-    // }
 
     getCounter() {
         return this.items.length;
@@ -76,20 +65,16 @@ export class BasketData extends Model<IBasketData>{
 
     getTotalPrice() {
         const hasNullPrices = this.items.some(item => item.price === null);
-        if (hasNullPrices) return null;
-        
-        return this.items.reduce((sum, product) => sum + (product.price || 0), 0);
+        this.total = hasNullPrices ? null : this.items.reduce((sum, product) => sum + (product.price || 0), 0);
+        return this.total;
+    }
+
+    isPriceless(item: BasketCard): boolean {
+        return item.price === null || item.price === 0;
     }
 
     getOrder() {
-        return {
-            payment: this.payment,
-            email: this.email,
-            phone: this.phone,
-            address: this.address,
-            total: this.total,
-            items: this.items,
-        }
+        return this.order;
     }
 
     setOrderField(field: keyof IOrderForm, value: string){

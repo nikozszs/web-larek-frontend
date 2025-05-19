@@ -3,7 +3,7 @@ import { Component } from "../base/component";
 
 interface ISuccess {
     total: number;
-    descriptionElement: string;
+    description: string;
 }
 
 interface ISuccessActions {

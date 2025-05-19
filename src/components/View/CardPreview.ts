@@ -13,8 +13,8 @@ export class CardPreview extends CardCatalog  {
 
         this._button.addEventListener('click', (evt) => {
             evt.preventDefault();
-            if (actions?.onClick) {
-                actions.onClick(evt);
+            if (actions?.onButtonClick) {
+                actions.onButtonClick(evt);
             }
         });
     }

@@ -4,6 +4,7 @@ export interface IActions {
     onClick?: (event: MouseEvent) => void;
     onSubmit?: (price: number) => void;
     onDelete?: (event: MouseEvent) => void
+    onButtonClick?: (event: MouseEvent) => void;
 }
 
 export type ProductsCatalog = Pick<IProduct, 'id' | 'image' | 'price' | 'title' | 'category'>;
@@ -48,6 +49,5 @@ export interface IOrder extends IOrderForm {
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface IOrderResult {
-    // id: string;
     total: number;
 }

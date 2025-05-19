@@ -48,8 +48,8 @@ const order = new FormOrder(cloneTemplate(templates.order), events);
 const success = new Success(cloneTemplate(templates.success), {
     onClick: () => {
         modal.close();
-        basketModel.clearBasket();
-        events.emit('basket:changed');
+        // basketModel.clearBasket();
+        // events.emit('basket:changed');
     }
 });
 
@@ -74,7 +74,6 @@ events.on<CatalogChangeEvent>('products:changed', () => {
             price: item.price,
         });
     });
-    page.counter = basketModel.getCounter();
 });
 
 // открыть модалку корзины
@@ -90,7 +89,6 @@ events.on('basket:changed', () => {
     page.counter = basketModel.getCounter();
     basket.items = basketModel.getProductsOrder().map((item, index) => {
         const cardBasket = new CardBasket(cloneTemplate(templates.cardBasket), {
-            onClick: () => events.emit('preview:changed', item),
             onDelete: () => events.emit('card:deleteBasket', item)
         });
         return cardBasket.render({
@@ -231,7 +229,8 @@ events.on('contacts:submit', () => {
         .then((result) => {
             modal.render({
                 content: success.render({
-                    descriptionElement: `Списано ${result} синапсов`
+                    total: result.total,
+                    description: `Списано ${result.total} синапсов`
                 })
             });
         })

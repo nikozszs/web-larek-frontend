@@ -1,6 +1,3 @@
-//Можно взять Order и его исправить и еще 
-// копию с него сделать и вторую форму реализовать. 
-
 import { IEvents } from "../base/events";
 import { Form } from "./Form";
 import { IOrderForm } from "../../types";

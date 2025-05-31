@@ -4,7 +4,6 @@ import { EventEmitter } from "../base/events";
 
 interface IBasketView {
     items: HTMLElement[];
-
     total: number;
 }
 
@@ -62,10 +61,5 @@ export class Basket extends Component<IBasketView> {
     setTotal(value: number | null) {
         const formattedValue = value === null ? 'Бесценно' : `${formatNumber(value)} синапсов`;
         this.setText(this._total, formattedValue);
-    }
-
-    clear(): void {
-        this.items = [];
-        this.setTotal(0);
     }
 }

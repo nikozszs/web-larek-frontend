@@ -43,21 +43,21 @@ export class BasketData extends Model<IBasketData>{
         return this.items.some(item => item.id === itemId);
     }
 
-    getButtonStatus(item: IProduct) {
-        if (this.hasItem(item.id)) {
-            this.deleteCardBasket(item.id);
-        } else {
-            this.addCardBasket(item);
-        }
-    }
+    // getButtonStatus(item: IProduct) {
+    //     if (this.hasItem(item.id)) {
+    //         this.deleteCardBasket(item.id);
+    //     } else {
+    //         this.addCardBasket(item);
+    //     }
+    // }
 
     getCounter() {
         return this.items.length;
     }
 
-    set products(data: BasketCard[]) {
-        this.items = data;
-    }
+    // set products(data: BasketCard[]) {
+    //     this.items = data;
+    // }
 
     getProductsOrder(): BasketCard[] {
         return this.items;
@@ -71,10 +71,6 @@ export class BasketData extends Model<IBasketData>{
 
     isPriceless(item: BasketCard): boolean {
         return item.price === null || item.price === 0;
-    }
-
-    getOrder() {
-        return this.order;
     }
 
     setOrderField(field: keyof IOrderForm, value: string){
@@ -104,9 +100,5 @@ export class BasketData extends Model<IBasketData>{
         this.formErrors = errors;
         this.events.emit('formErrors:changed', this.formErrors);
         return Object.keys(errors).length === 0;
-    }
-
-    validateBasket(): boolean {
-        return this.items.length > 0;
     }
 }

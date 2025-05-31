@@ -24,7 +24,7 @@ export class CardCatalog extends CardBase<IProduct> {
         }
 
     set image(value: string) {
-        this.setImage(this._image, value, this.title)
+        this.setImage(this._image, value, this._title)
     }
 
     set category(value: string) { 
